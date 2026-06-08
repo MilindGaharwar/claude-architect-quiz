@@ -1,0 +1,2334 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Architect Exam — Practice Quiz</title>
+<style>
+/* ─── CSS Custom Properties ─────────────────────────────── */
+:root {
+  --bg:          #1a1f2e;
+  --surface:     #242938;
+  --surface2:    #2d3347;
+  --border:      #3a4057;
+  --accent:      #e8622a;
+  --accent2:     #f0935a;
+  --text:        #e8eaf0;
+  --text2:       #8b93a8;
+  --success:     #52c87a;
+  --danger:      #e85252;
+  --warn:        #f0c040;
+  --radius:      8px;
+  --radius-lg:   14px;
+  --shadow:      0 4px 24px rgba(0,0,0,0.4);
+}
+[data-theme="light"] {
+  --bg:          #f4f6fb;
+  --surface:     #ffffff;
+  --surface2:    #eef0f7;
+  --border:      #d0d5e8;
+  --accent:      #c94f1a;
+  --accent2:     #e06030;
+  --text:        #1a1f2e;
+  --text2:       #5a6275;
+  --success:     #2a9d50;
+  --danger:      #cc3333;
+  --warn:        #c08800;
+  --shadow:      0 4px 24px rgba(0,0,0,0.1);
+}
+
+/* ─── Reset & Base ──────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  transition: background 0.2s, color 0.2s;
+}
+button { cursor: pointer; font-family: inherit; border: none; outline: none; }
+input { font-family: inherit; outline: none; }
+a { color: var(--accent); text-decoration: none; }
+
+/* ─── Nav ───────────────────────────────────────────────── */
+#nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; height: 56px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 100;
+}
+#nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-weight: 700; font-size: 1rem; color: var(--text);
+}
+#nav-logo svg { width: 28px; height: 28px; }
+#nav-right { display: flex; align-items: center; gap: 12px; }
+.nav-btn {
+  background: none; color: var(--text2); font-size: 0.85rem;
+  padding: 6px 12px; border-radius: var(--radius); border: 1px solid var(--border);
+  transition: all 0.15s;
+}
+.nav-btn:hover { background: var(--surface2); color: var(--text); }
+
+/* ─── Layout ─────────────────────────────────────────────── */
+#app { max-width: 900px; margin: 0 auto; padding: 32px 20px; }
+
+/* ─── Typography ─────────────────────────────────────────── */
+h1 { font-size: 1.8rem; font-weight: 700; }
+h2 { font-size: 1.3rem; font-weight: 600; }
+h3 { font-size: 1.05rem; font-weight: 600; }
+.text-sm  { font-size: 0.85rem; }
+.text-xs  { font-size: 0.78rem; }
+.text-2   { color: var(--text2); }
+.mt-4  { margin-top: 4px; }
+.mt-8  { margin-top: 8px; }
+.mt-16 { margin-top: 16px; }
+.mt-24 { margin-top: 24px; }
+.mb-8  { margin-bottom: 8px; }
+.mb-16 { margin-bottom: 16px; }
+
+/* ─── Cards ──────────────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow);
+}
+.card-sm { padding: 16px; border-radius: var(--radius); }
+
+/* ─── Buttons ────────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 10px 20px; border-radius: var(--radius); font-size: 0.9rem;
+  font-weight: 500; transition: all 0.15s;
+}
+.btn-primary {
+  background: var(--accent); color: #fff;
+}
+.btn-primary:hover { background: var(--accent2); }
+.btn-primary:disabled { background: var(--border); color: var(--text2); cursor: default; }
+.btn-secondary {
+  background: var(--surface2); color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+.btn-ghost { background: none; color: var(--text2); }
+.btn-ghost:hover { color: var(--text); background: var(--surface2); }
+.btn-sm { padding: 6px 14px; font-size: 0.82rem; }
+.btn-lg { padding: 13px 28px; font-size: 1rem; }
+
+/* ─── Badges ─────────────────────────────────────────────── */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 600;
+}
+.badge-accent   { background: rgba(232,98,42,0.15); color: var(--accent); }
+.badge-success  { background: rgba(82,200,122,0.15); color: var(--success); }
+.badge-danger   { background: rgba(232,82,82,0.15);  color: var(--danger); }
+.badge-warn     { background: rgba(240,192,64,0.15); color: var(--warn); }
+.badge-neutral  { background: var(--surface2); color: var(--text2); }
+
+/* ─── Progress Bar ───────────────────────────────────────── */
+.progress-bar {
+  height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden;
+}
+.progress-fill {
+  height: 100%; border-radius: 3px; transition: width 0.3s ease;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+}
+.progress-fill.danger { background: var(--danger); }
+.progress-fill.success { background: var(--success); }
+
+/* ─── Dashboard ──────────────────────────────────────────── */
+.dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 24px; }
+@media (max-width: 640px) { .dash-grid { grid-template-columns: 1fr; } }
+.readiness-big {
+  font-size: 3.5rem; font-weight: 800; color: var(--accent);
+  line-height: 1;
+}
+.domain-bar-row {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 10px;
+}
+.domain-bar-label { font-size: 0.82rem; width: 30px; font-weight: 600; color: var(--text2); }
+.domain-bar-wrap { flex: 1; }
+.domain-bar-pct { font-size: 0.82rem; width: 38px; text-align: right; color: var(--text2); }
+.bucket-row {
+  display: flex; gap: 12px; margin-top: 8px;
+}
+.bucket-chip {
+  flex: 1; text-align: center; padding: 12px 8px;
+  background: var(--surface2); border-radius: var(--radius);
+}
+.bucket-count { font-size: 1.5rem; font-weight: 700; }
+.bucket-label { font-size: 0.75rem; color: var(--text2); margin-top: 2px; }
+.session-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 0; border-bottom: 1px solid var(--border);
+}
+.session-row:last-child { border-bottom: none; }
+
+/* ─── Mode Select ────────────────────────────────────────── */
+.mode-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 20px; }
+@media (max-width: 620px) { .mode-grid { grid-template-columns: 1fr; } }
+.mode-card {
+  background: var(--surface); border: 2px solid var(--border);
+  border-radius: var(--radius-lg); padding: 20px; cursor: pointer;
+  transition: all 0.15s;
+}
+.mode-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.mode-card.selected { border-color: var(--accent); background: rgba(232,98,42,0.07); }
+.mode-icon { font-size: 2rem; margin-bottom: 10px; }
+.mode-title { font-weight: 700; margin-bottom: 6px; }
+.mode-desc { font-size: 0.82rem; color: var(--text2); line-height: 1.5; }
+
+/* ─── Config Panels ──────────────────────────────────────── */
+.config-panel { margin-top: 24px; }
+.config-section { margin-bottom: 20px; }
+.config-label { font-size: 0.85rem; font-weight: 600; color: var(--text2); margin-bottom: 8px; }
+.preset-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.preset-btn {
+  padding: 7px 16px; border-radius: var(--radius); font-size: 0.85rem; font-weight: 500;
+  background: var(--surface2); border: 1px solid var(--border); color: var(--text);
+  transition: all 0.15s;
+}
+.preset-btn:hover { border-color: var(--accent); color: var(--accent); }
+.preset-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.custom-input {
+  padding: 7px 12px; border-radius: var(--radius); font-size: 0.85rem;
+  background: var(--surface2); border: 1px solid var(--border); color: var(--text);
+  width: 100px; transition: border 0.15s;
+}
+.custom-input:focus { border-color: var(--accent); }
+.custom-input.error { border-color: var(--danger); }
+.input-error { font-size: 0.78rem; color: var(--danger); margin-top: 4px; }
+.timer-option {
+  display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+  border: 2px solid var(--border); border-radius: var(--radius); margin-bottom: 8px;
+  cursor: pointer; transition: all 0.15s;
+}
+.timer-option:hover { border-color: var(--accent); }
+.timer-option.selected { border-color: var(--accent); background: rgba(232,98,42,0.07); }
+.timer-option input[type="radio"] { accent-color: var(--accent); }
+.domain-option {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; border: 2px solid var(--border); border-radius: var(--radius);
+  margin-bottom: 8px; cursor: pointer; transition: all 0.15s;
+}
+.domain-option:hover { border-color: var(--accent); }
+.domain-option.selected { border-color: var(--accent); background: rgba(232,98,42,0.07); }
+
+/* ─── Quiz Screen ────────────────────────────────────────── */
+.quiz-header {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;
+}
+.quiz-meta { display: flex; align-items: center; gap: 12px; }
+.q-counter { font-size: 0.85rem; color: var(--text2); }
+.q-domain-badge { font-size: 0.78rem; }
+.timer-display {
+  font-family: 'Courier New', monospace; font-size: 1rem; font-weight: 700;
+  color: var(--text); min-width: 60px; text-align: right;
+}
+.timer-display.warn { color: var(--warn); }
+.timer-display.danger { color: var(--danger); }
+.question-text {
+  font-size: 1.05rem; line-height: 1.65; margin: 20px 0;
+  background: var(--surface2); padding: 20px; border-radius: var(--radius);
+  border-left: 3px solid var(--accent);
+}
+.choices { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+.choice-btn {
+  display: flex; align-items: flex-start; gap: 14px; padding: 14px 16px;
+  background: var(--surface2); border: 2px solid var(--border);
+  border-radius: var(--radius); text-align: left; color: var(--text);
+  font-size: 0.95rem; line-height: 1.5; transition: all 0.15s; width: 100%;
+}
+.choice-btn:hover:not(:disabled) { border-color: var(--accent); }
+.choice-btn.selected { border-color: var(--accent); background: rgba(232,98,42,0.1); }
+.choice-btn.correct { border-color: var(--success); background: rgba(82,200,122,0.1); }
+.choice-btn.wrong   { border-color: var(--danger);  background: rgba(232,82,82,0.1); }
+.choice-btn:disabled { cursor: default; }
+.choice-letter {
+  display: flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; min-width: 28px;
+  background: var(--border); border-radius: 6px;
+  font-weight: 700; font-size: 0.85rem; margin-top: 1px;
+}
+.choice-btn.selected .choice-letter { background: var(--accent); color: #fff; }
+.choice-btn.correct .choice-letter  { background: var(--success); color: #fff; }
+.choice-btn.wrong   .choice-letter  { background: var(--danger);  color: #fff; }
+.choice-text { flex: 1; }
+.explanation-panel {
+  margin-top: 16px; padding: 16px 20px;
+  background: var(--surface2); border-radius: var(--radius);
+  border-left: 3px solid var(--success);
+  font-size: 0.92rem; line-height: 1.6;
+}
+.explanation-label { font-size: 0.78rem; font-weight: 700; color: var(--success); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+.quiz-actions { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; flex-wrap: wrap; gap: 10px; }
+.quiz-actions-left { display: flex; gap: 8px; }
+.kbd-hint { font-size: 0.75rem; color: var(--text2); margin-top: 12px; text-align: center; }
+.kbd { display: inline-block; padding: 1px 6px; background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; font-size: 0.72rem; }
+.flag-btn {
+  padding: 7px 14px; border-radius: var(--radius); font-size: 0.82rem;
+  background: none; border: 1px solid var(--border); color: var(--text2);
+  transition: all 0.15s;
+}
+.flag-btn.flagged { border-color: var(--warn); color: var(--warn); background: rgba(240,192,64,0.1); }
+.flag-btn:hover { border-color: var(--warn); color: var(--warn); }
+
+/* ─── Question Navigator ─────────────────────────────────── */
+.nav-toggle-btn {
+  padding: 7px 14px; border-radius: var(--radius); font-size: 0.82rem;
+  background: var(--surface2); border: 1px solid var(--border); color: var(--text2);
+}
+#q-navigator {
+  margin-top: 16px; padding: 16px;
+  background: var(--surface2); border-radius: var(--radius);
+  display: none;
+}
+#q-navigator.open { display: block; }
+.nav-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+.nav-cell {
+  width: 34px; height: 34px; border-radius: 6px; font-size: 0.78rem; font-weight: 600;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  background: var(--surface); border: 1px solid var(--border); color: var(--text2);
+  transition: all 0.12s; position: relative;
+}
+.nav-cell:hover { border-color: var(--accent); color: var(--accent); }
+.nav-cell.current { border-color: var(--accent); color: var(--accent); background: rgba(232,98,42,0.12); }
+.nav-cell.answered { background: var(--surface2); border-color: #5a6080; color: var(--text); }
+.nav-cell.answered.correct-nav { border-color: var(--success); }
+.nav-cell.flagged::after {
+  content: ''; position: absolute; top: 2px; right: 2px;
+  width: 6px; height: 6px; background: var(--warn); border-radius: 50%;
+}
+
+/* ─── Results ────────────────────────────────────────────── */
+.score-hero {
+  text-align: center; padding: 32px;
+  background: var(--surface); border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+}
+.score-number {
+  font-size: 5rem; font-weight: 800; line-height: 1;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.pass-badge {
+  display: inline-block; padding: 6px 20px; border-radius: 20px;
+  font-size: 1.1rem; font-weight: 700; margin-top: 12px;
+}
+.pass-badge.pass { background: rgba(82,200,122,0.2); color: var(--success); }
+.pass-badge.fail { background: rgba(232,82,82,0.2); color: var(--danger); }
+.results-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+.results-table th, .results-table td {
+  padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border);
+  font-size: 0.88rem;
+}
+.results-table th { color: var(--text2); font-weight: 600; }
+.review-item {
+  padding: 20px; border: 1px solid var(--border); border-radius: var(--radius);
+  margin-bottom: 12px;
+}
+.review-item.incorrect { border-color: rgba(232,82,82,0.3); }
+.review-q-text { font-size: 0.95rem; line-height: 1.55; margin: 10px 0; }
+.review-choices { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+.review-choice {
+  display: flex; gap: 10px; padding: 8px 12px; border-radius: 6px;
+  font-size: 0.87rem; line-height: 1.4;
+}
+.review-choice.correct-ans { background: rgba(82,200,122,0.1); color: var(--success); }
+.review-choice.user-wrong  { background: rgba(232,82,82,0.1);  color: var(--danger); }
+.review-choice.neutral     { color: var(--text2); }
+.review-explanation { font-size: 0.87rem; line-height: 1.55; color: var(--text2); padding: 10px 14px; background: var(--surface2); border-radius: 6px; }
+.filter-row { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.filter-btn {
+  padding: 6px 14px; border-radius: 20px; font-size: 0.82rem;
+  background: var(--surface2); border: 1px solid var(--border); color: var(--text2);
+  transition: all 0.15s;
+}
+.filter-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* ─── Empty state ────────────────────────────────────────── */
+.empty-state { text-align: center; padding: 48px 20px; color: var(--text2); }
+.empty-icon { font-size: 3rem; margin-bottom: 12px; }
+
+/* ─── Toast ──────────────────────────────────────────────── */
+#toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 12px 20px; font-size: 0.88rem; box-shadow: var(--shadow);
+  transition: transform 0.25s ease; z-index: 999; pointer-events: none;
+}
+#toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ─── Scrollbar ──────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ─── Attribution (triple-embedded, do not remove) ──────── */
+#credit {
+  position: fixed; bottom: 10px; right: 14px; z-index: 9998;
+  font-size: 0.72rem; color: var(--text2); opacity: 0.7;
+  pointer-events: none; user-select: none;
+  font-family: -apple-system, sans-serif; letter-spacing: 0.02em;
+}
+body::after {
+  content: "Created by: Milind";
+  position: fixed; bottom: 10px; right: 14px; z-index: 9997;
+  font-size: 0.72rem; color: var(--text2); opacity: 0;
+  pointer-events: none;
+}
+#nav::after {
+  content: "Created by: Milind";
+  font-size: 0.75rem; color: var(--text2); opacity: 0.65;
+  margin-left: 8px; white-space: nowrap; pointer-events: none;
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div id="nav-logo">
+    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="28" height="28" rx="7" fill="#e8622a"/>
+      <path d="M7 21L14 7L21 21M10 16.5H18" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+    </svg>
+    Claude Architect Quiz
+  </div>
+  <div id="nav-right">
+    <span id="due-badge" class="badge badge-warn" style="display:none">⏰ <span id="due-count">0</span> due</span>
+    <button class="nav-btn" id="theme-toggle">☀ Light</button>
+    <button class="nav-btn" id="reset-btn" onclick="confirmReset()">↺ Reset</button>
+  </div>
+</nav>
+
+<!-- Attribution — Created by: Milind -->
+<div id="credit">Created by: Milind</div>
+
+<!-- APP CONTAINER -->
+<div id="app"></div>
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// DATA: injected by build.py
+// ═══════════════════════════════════════════════════════════════
+/*QUESTIONS_DATA_PLACEHOLDER*/
+
+// ═══════════════════════════════════════════════════════════════
+// STORAGE MANAGER
+// ═══════════════════════════════════════════════════════════════
+const Storage = (() => {
+  const KEYS = { progress: 'caq_progress', sessions: 'caq_sessions', prefs: 'caq_prefs' };
+  let _p = null, _s = null, _pr = null;
+
+  function _load() {
+    try {
+      _p  = JSON.parse(localStorage.getItem(KEYS.progress)  || '{}');
+      _s  = JSON.parse(localStorage.getItem(KEYS.sessions)  || '[]');
+      _pr = JSON.parse(localStorage.getItem(KEYS.prefs)     || '{}');
+    } catch(e) {
+      _p = {}; _s = []; _pr = {};
+    }
+  }
+
+  function _save() {
+    try {
+      localStorage.setItem(KEYS.progress, JSON.stringify(_p));
+      localStorage.setItem(KEYS.sessions, JSON.stringify(_s));
+      localStorage.setItem(KEYS.prefs,    JSON.stringify(_pr));
+    } catch(e) { showToast('Warning: could not save progress (storage full?)'); }
+  }
+
+  function _defaultRecord() {
+    return {
+      times_seen: 0, times_correct: 0, times_incorrect: 0,
+      last_seen_date: null, consecutive_correct: 0,
+      sm2_interval: 1, sm2_ease_factor: 2.5, sm2_next_review: null
+    };
+  }
+
+  function getProgress(id) {
+    if (!_p[id]) _p[id] = _defaultRecord();
+    return _p[id];
+  }
+
+  function updateProgress(id, wasCorrect) {
+    const rec = getProgress(id);
+    const today = todayISO();
+    rec.times_seen++;
+    rec.last_seen_date = today;
+    if (wasCorrect) {
+      rec.times_correct++;
+      rec.consecutive_correct++;
+    } else {
+      rec.times_incorrect++;
+      rec.consecutive_correct = 0;
+    }
+    // SM-2
+    const quality = wasCorrect ? 4 : 1;
+    if (quality >= 3) {
+      rec.sm2_interval = Math.max(1, Math.round(rec.sm2_interval * rec.sm2_ease_factor));
+    } else {
+      rec.sm2_interval = 1;
+    }
+    rec.sm2_ease_factor = Math.max(1.3,
+      rec.sm2_ease_factor + 0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02)
+    );
+    rec.sm2_next_review = addDays(today, rec.sm2_interval);
+    _p[id] = rec;
+    _save();
+  }
+
+  function getBucket(rec) {
+    if (!rec || rec.times_seen === 0) return 'new';
+    if (rec.consecutive_correct >= 2) return 'mastered';
+    return 'learning';
+  }
+
+  function getBucketCounts() {
+    let counts = { new: 0, learning: 0, mastered: 0 };
+    for (const q of QUESTIONS) {
+      const rec = _p[q.id];
+      counts[getBucket(rec)]++;
+    }
+    return counts;
+  }
+
+  function getDueCount() {
+    const today = todayISO();
+    return QUESTIONS.filter(q => {
+      const rec = _p[q.id];
+      return rec && rec.sm2_next_review && rec.sm2_next_review <= today;
+    }).length;
+  }
+
+  function addSession(session) {
+    _s.unshift(session);
+    if (_s.length > 5) _s = _s.slice(0, 5);
+    _save();
+  }
+
+  function getSessions() { return _s; }
+
+  function getPref(key, def) {
+    return _pr[key] !== undefined ? _pr[key] : def;
+  }
+
+  function setPref(key, val) {
+    _pr[key] = val;
+    _save();
+  }
+
+  function getDashboardStats() {
+    const domainCodes = ['D1','D2','D3','D4','D5'];
+    const domainWeights = { D1:0.27, D2:0.18, D3:0.20, D4:0.20, D5:0.15 };
+    const domainNames = {
+      D1:'Agentic Architecture', D2:'Tool Design & MCP',
+      D3:'Claude Code Config',   D4:'Prompt Engineering',
+      D5:'Context Management'
+    };
+
+    const domainStats = {};
+    for (const code of domainCodes) {
+      const qs = QUESTIONS.filter(q => q.domain === code || (code === 'D1' && q.domain === 'SQ'));
+      const attempted = qs.filter(q => _p[q.id] && _p[q.id].times_seen > 0);
+      const correct   = qs.filter(q => _p[q.id] && _p[q.id].times_correct > 0);
+      domainStats[code] = {
+        name: domainNames[code],
+        total: qs.length,
+        attempted: attempted.length,
+        correct_count: correct.length,
+        accuracy: attempted.length > 0
+          ? Math.round(attempted.filter(q => _p[q.id].times_correct > _p[q.id].times_incorrect).length / attempted.length * 100)
+          : null
+      };
+    }
+
+    // Per-domain accuracy for weighting (only domains with attempts)
+    let weightedSum = 0, weightTotal = 0;
+    for (const code of domainCodes) {
+      if (domainStats[code].accuracy !== null) {
+        weightedSum  += domainStats[code].accuracy * domainWeights[code];
+        weightTotal  += domainWeights[code];
+      }
+    }
+    const readiness = weightTotal > 0 ? Math.round(weightedSum / weightTotal) : null;
+
+    // Top 5 weak questions (most missed)
+    const weakQs = QUESTIONS
+      .filter(q => _p[q.id] && _p[q.id].times_seen > 0 && _p[q.id].times_incorrect > 0)
+      .sort((a, b) => _p[b.id].times_incorrect - _p[a.id].times_incorrect)
+      .slice(0, 5);
+
+    return {
+      readiness,
+      domainStats,
+      buckets: getBucketCounts(),
+      dueCount: getDueCount(),
+      sessions: getSessions(),
+      weakQs
+    };
+  }
+
+  function exportProgress() {
+    const data = { progress: _p, sessions: _s, prefs: _pr, exported: todayISO() };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = `claude_quiz_progress_${todayISO()}.json`;
+    a.click(); URL.revokeObjectURL(url);
+  }
+
+  function importProgress(jsonStr) {
+    let data;
+    try { data = JSON.parse(jsonStr); }
+    catch(e) { throw new Error('Invalid JSON file'); }
+    if (!data.progress || typeof data.progress !== 'object') throw new Error('Missing progress data');
+    // Merge: take record with higher times_seen
+    for (const [id, rec] of Object.entries(data.progress)) {
+      if (!_p[id] || rec.times_seen > _p[id].times_seen) {
+        _p[id] = rec;
+      }
+    }
+    // Merge sessions
+    if (Array.isArray(data.sessions)) {
+      const all = [..._s, ...data.sessions];
+      const seen = new Set();
+      _s = all.filter(s => {
+        const key = `${s.date}${s.mode}${s.score}`;
+        if (seen.has(key)) return false;
+        seen.add(key); return true;
+      }).slice(0, 5);
+    }
+    _save();
+  }
+
+  function reset() {
+    _p = {}; _s = []; _pr = {};
+    localStorage.removeItem(KEYS.progress);
+    localStorage.removeItem(KEYS.sessions);
+    localStorage.removeItem(KEYS.prefs);
+  }
+
+  function checkAvailable() {
+    try {
+      localStorage.setItem('__test__','1');
+      localStorage.removeItem('__test__');
+      return true;
+    } catch(e) { return false; }
+  }
+
+  _load();
+  return {
+    getProgress, updateProgress, getBucket, getBucketCounts, getDueCount,
+    addSession, getSessions, getPref, setPref, getDashboardStats,
+    exportProgress, importProgress, reset, checkAvailable,
+    // expose raw for testing
+    _p: () => _p
+  };
+})();
+
+// ═══════════════════════════════════════════════════════════════
+// QUIZ ENGINE
+// ═══════════════════════════════════════════════════════════════
+const Engine = (() => {
+  const DOMAIN_WEIGHTS = { D1:0.27, D2:0.18, D3:0.20, D4:0.20, D5:0.15 };
+  // SQ questions are distributed across all domains proportionally
+  const DOMAIN_QS = {};
+  const DOMAIN_CODES = ['D1','D2','D3','D4','D5'];
+  for (const code of DOMAIN_CODES) {
+    DOMAIN_QS[code] = QUESTIONS.filter(q => q.domain === code || q.domain === 'SQ' && code === 'D1');
+  }
+  // Actually treat SQ as part of general pool for exam mode
+  const ALL_QS = QUESTIONS;
+  const DOMAIN_PURE = {};
+  for (const code of DOMAIN_CODES) {
+    DOMAIN_PURE[code] = QUESTIONS.filter(q => q.domain === code);
+  }
+  // SQ questions pool
+  const SQ_QS = QUESTIONS.filter(q => q.domain === 'SQ');
+
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function selectExamQuestions(count) {
+    // Domain-weighted selection without replacement
+    // First figure out how many per domain
+    const counts = {};
+    let assigned = 0;
+    const sortedCodes = [...DOMAIN_CODES].sort((a,b) => DOMAIN_WEIGHTS[b] - DOMAIN_WEIGHTS[a]);
+
+    for (let i = 0; i < sortedCodes.length; i++) {
+      const code = sortedCodes[i];
+      if (i < sortedCodes.length - 1) {
+        counts[code] = Math.floor(count * DOMAIN_WEIGHTS[code]);
+        assigned += counts[code];
+      } else {
+        counts[code] = count - assigned;
+      }
+    }
+
+    // Select from each domain + SQ proportionally
+    const sqCount = Math.round(count * (12 / QUESTIONS.length));
+    let result = [];
+    const sqSelected = shuffle(SQ_QS).slice(0, sqCount);
+    result.push(...sqSelected);
+
+    for (const code of DOMAIN_CODES) {
+      const pool = shuffle(DOMAIN_PURE[code]);
+      const need = Math.max(0, counts[code] - (code === 'D1' ? sqCount : 0));
+      result.push(...pool.slice(0, need));
+    }
+
+    // Trim or pad to exact count
+    result = shuffle(result).slice(0, count);
+    if (result.length < count) {
+      const used = new Set(result.map(q => q.id));
+      const extra = shuffle(ALL_QS.filter(q => !used.has(q.id)));
+      result.push(...extra.slice(0, count - result.length));
+    }
+    return shuffle(result);
+  }
+
+  function selectDrillQuestions(domain, count) {
+    const pool = domain === 'SQ'
+      ? SQ_QS
+      : DOMAIN_PURE[domain] || [];
+    return shuffle(pool).slice(0, count);
+  }
+
+  function selectWeakQuestions(count) {
+    const prog = Storage._p();
+    const newQ      = QUESTIONS.filter(q => !prog[q.id] || prog[q.id].times_seen === 0);
+    const learningQ = QUESTIONS.filter(q => {
+      const r = prog[q.id];
+      return r && r.times_seen > 0 && r.consecutive_correct < 2;
+    });
+    const masteredQ = QUESTIONS.filter(q => {
+      const r = prog[q.id];
+      return r && r.consecutive_correct >= 2;
+    });
+
+    let pool = shuffle([...newQ, ...learningQ]);
+    if (pool.length < count) {
+      const spillover = Math.min(
+        Math.ceil(count * 0.1),
+        masteredQ.length
+      );
+      pool = pool.concat(shuffle(masteredQ).slice(0, spillover));
+    }
+    return pool.slice(0, count);
+  }
+
+  function getWeakPoolSize() {
+    const prog = Storage._p();
+    const newQ      = QUESTIONS.filter(q => !prog[q.id] || prog[q.id].times_seen === 0);
+    const learningQ = QUESTIONS.filter(q => {
+      const r = prog[q.id];
+      return r && r.times_seen > 0 && r.consecutive_correct < 2;
+    });
+    return newQ.length + learningQ.length;
+  }
+
+  function calculateScaledScore(correct, total) {
+    if (total === 0) return 100;
+    return Math.round(100 + (correct / total) * 900);
+  }
+
+  function isPassing(score) { return score >= 720; }
+
+  return {
+    selectExamQuestions, selectDrillQuestions, selectWeakQuestions,
+    getWeakPoolSize, calculateScaledScore, isPassing, DOMAIN_PURE, SQ_QS,
+    DOMAIN_CODES, DOMAIN_WEIGHTS
+  };
+})();
+
+// ═══════════════════════════════════════════════════════════════
+// QUIZ SESSION STATE MACHINE
+// ═══════════════════════════════════════════════════════════════
+let SESSION = null;
+
+function createSession(mode, questions, timerMode, timerValue) {
+  return {
+    mode,           // 'exam' | 'drill' | 'weak'
+    questions,
+    currentIndex: 0,
+    answers: {},    // questionId -> { letter, correct }
+    flags: new Set(),
+    timerMode,      // 'per_question' | 'overall' | null
+    timerValue,     // seconds (per-question duration or overall duration)
+    startTime: Date.now(),
+    questionStartTime: Date.now(),
+    completed: false,
+    domain: null    // for drill mode
+  };
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TIMER
+// ═══════════════════════════════════════════════════════════════
+let _timerInterval = null;
+let _timerRemaining = 0;
+let _timerOnTick = null;
+let _timerOnExpire = null;
+let _timerStartWall = null;
+let _timerStartRemaining = null;
+
+function timerStart(seconds, onTick, onExpire) {
+  timerClear();
+  _timerRemaining = seconds;
+  _timerStartWall = Date.now();
+  _timerStartRemaining = seconds;
+  _timerOnTick = onTick;
+  _timerOnExpire = onExpire;
+  _timerInterval = setInterval(() => {
+    const elapsed = (Date.now() - _timerStartWall) / 1000;
+    _timerRemaining = Math.max(0, _timerStartRemaining - elapsed);
+    if (_timerOnTick) _timerOnTick(_timerRemaining);
+    if (_timerRemaining <= 0) {
+      timerClear();
+      if (_timerOnExpire) _timerOnExpire();
+    }
+  }, 100);
+}
+
+function timerReset(seconds) {
+  _timerStartWall = Date.now();
+  _timerStartRemaining = seconds;
+  _timerRemaining = seconds;
+}
+
+function timerClear() {
+  if (_timerInterval) { clearInterval(_timerInterval); _timerInterval = null; }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ROUTER
+// ═══════════════════════════════════════════════════════════════
+const Router = {
+  current: null,
+  navigate(screen, params) {
+    this.current = screen;
+    timerClear();
+    removeKeyboardHandler();
+    render(screen, params);
+    window.scrollTo(0, 0);
+  }
+};
+
+// ═══════════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════════
+function todayISO() {
+  const d = new Date();
+  return d.getFullYear() + '-' +
+    String(d.getMonth()+1).padStart(2,'0') + '-' +
+    String(d.getDate()).padStart(2,'0');
+}
+
+function addDays(isoDate, days) {
+  const parts = isoDate.split('-');
+  const d = new Date(+parts[0], +parts[1]-1, +parts[2]);
+  d.setDate(d.getDate() + days);
+  return d.getFullYear() + '-' +
+    String(d.getMonth()+1).padStart(2,'0') + '-' +
+    String(d.getDate()).padStart(2,'0');
+}
+
+function formatTime(seconds) {
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${m}:${String(s).padStart(2,'0')}`;
+}
+
+function formatDate(isoDate) {
+  if (!isoDate) return '—';
+  const parts = isoDate.split('-');
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${months[+parts[1]-1]} ${+parts[2]}, ${parts[0]}`;
+}
+
+function esc(str) {
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+let _kbHandler = null;
+function removeKeyboardHandler() {
+  if (_kbHandler) { document.removeEventListener('keydown', _kbHandler); _kbHandler = null; }
+}
+function setKeyboardHandler(fn) {
+  removeKeyboardHandler();
+  _kbHandler = fn;
+  document.addEventListener('keydown', _kbHandler);
+}
+
+let _toastTimer = null;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+  if (_toastTimer) clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+function confirmReset() {
+  if (confirm('Reset ALL progress? This cannot be undone.')) {
+    Storage.reset();
+    Router.navigate('dashboard');
+    showToast('Progress reset.');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// THEME
+// ═══════════════════════════════════════════════════════════════
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  const btn = document.getElementById('theme-toggle');
+  if (btn) btn.textContent = theme === 'dark' ? '☀ Light' : '☾ Dark';
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  applyTheme(next);
+  Storage.setPref('theme', next);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER ENGINE
+// ═══════════════════════════════════════════════════════════════
+function render(screen, params) {
+  const app = document.getElementById('app');
+  app.innerHTML = '';
+  switch(screen) {
+    case 'dashboard':   renderDashboard(app); break;
+    case 'mode_select': renderModeSelect(app); break;
+    case 'exam_config': renderExamConfig(app); break;
+    case 'drill_config':renderDrillConfig(app); break;
+    case 'weak_config': renderWeakConfig(app); break;
+    case 'quiz':        renderQuiz(app); break;
+    case 'results':     renderResults(app, params); break;
+    case 'summary':     renderSummary(app, params); break;
+  }
+  // Update due badge
+  const dueCount = Storage.getDueCount();
+  const dueBadge = document.getElementById('due-badge');
+  const dueEl    = document.getElementById('due-count');
+  if (dueBadge && dueEl) {
+    dueEl.textContent = dueCount;
+    dueBadge.style.display = dueCount > 0 ? '' : 'none';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SCREEN: DASHBOARD
+// ═══════════════════════════════════════════════════════════════
+function renderDashboard(app) {
+  const stats = Storage.getDashboardStats();
+  const { readiness, domainStats, buckets, dueCount, sessions, weakQs } = stats;
+
+  const DOMAIN_CODES = ['D1','D2','D3','D4','D5'];
+
+  let domainBars = DOMAIN_CODES.map(code => {
+    const ds = domainStats[code];
+    const pct = ds.accuracy !== null ? ds.accuracy : 0;
+    const label = ds.accuracy !== null ? `${ds.accuracy}%` : 'No data';
+    return `
+      <div class="domain-bar-row">
+        <span class="domain-bar-label">${code}</span>
+        <div class="domain-bar-wrap">
+          <div class="progress-bar" style="height:8px">
+            <div class="progress-fill ${pct >= 72 ? 'success' : pct >= 50 ? '' : 'danger'}"
+                 style="width:${pct}%"></div>
+          </div>
+          <div class="text-xs text-2 mt-4">${esc(ds.name)}</div>
+        </div>
+        <span class="domain-bar-pct">${label}</span>
+      </div>`;
+  }).join('');
+
+  let sessionRows = '';
+  if (sessions.length === 0) {
+    sessionRows = '<div class="text-sm text-2" style="padding:8px 0">No sessions yet</div>';
+  } else {
+    sessionRows = sessions.map(s => {
+      const modeLabel = {exam:'Exam Sim',drill:'Domain Drill',weak:'Weak Areas'}[s.mode] || s.mode;
+      const scoreLabel = s.mode === 'exam'
+        ? `${s.score}/1000 ${s.score >= 720 ? '✓' : '✗'}`
+        : `${s.score}% accuracy`;
+      const domainLabel = s.domain ? ` · ${s.domain}` : '';
+      return `<div class="session-row">
+        <div>
+          <div class="text-sm">${modeLabel}${domainLabel} · ${s.question_count}q</div>
+          <div class="text-xs text-2">${formatDate(s.date)}</div>
+        </div>
+        <div class="text-sm" style="font-weight:600">${scoreLabel}</div>
+      </div>`;
+    }).join('');
+  }
+
+  let weakPanel = '';
+  if (weakQs.length > 0) {
+    weakPanel = weakQs.map(q => {
+      const rec = Storage.getProgress(q.id);
+      return `<div class="text-sm" style="padding:6px 0; border-bottom:1px solid var(--border)">
+        <span class="text-xs text-2">${q.id} · ${q.domain}</span>
+        <span class="badge badge-danger" style="margin-left:8px; font-size:0.72rem">${rec.times_incorrect} wrong</span>
+        <div style="margin-top:3px;color:var(--text)">${esc(q.question.substring(0,90))}…</div>
+      </div>`;
+    }).join('');
+  } else {
+    weakPanel = '<div class="text-sm text-2">No weak areas yet — start quizzing!</div>';
+  }
+
+  app.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <h1>Study Dashboard</h1>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-secondary btn-sm" onclick="Storage.exportProgress()">↓ Export</button>
+        <label class="btn btn-secondary btn-sm" style="cursor:pointer">
+          ↑ Import<input type="file" accept=".json" style="display:none" onchange="handleImport(event)">
+        </label>
+      </div>
+    </div>
+    <p class="text-sm text-2 mb-16">Track your exam readiness across all 5 domains.</p>
+
+    <div class="dash-grid">
+      <!-- Readiness Score -->
+      <div class="card">
+        <div class="text-sm text-2 mb-8">Overall Readiness</div>
+        <div class="readiness-big">${readiness !== null ? readiness + '%' : '—'}</div>
+        <div class="text-sm text-2 mt-8">
+          ${readiness !== null
+            ? (readiness >= 72 ? '🟢 On track to pass' : readiness >= 50 ? '🟡 Keep studying' : '🔴 Needs work')
+            : 'Answer questions to see readiness'}
+        </div>
+        ${dueCount > 0 ? `<div class="badge badge-warn mt-8">⏰ ${dueCount} due for review</div>` : ''}
+      </div>
+
+      <!-- Bucket Counts -->
+      <div class="card">
+        <div class="text-sm text-2 mb-8">Question Progress</div>
+        <div class="bucket-row">
+          <div class="bucket-chip">
+            <div class="bucket-count" style="color:var(--text2)">${buckets.new}</div>
+            <div class="bucket-label">New</div>
+          </div>
+          <div class="bucket-chip">
+            <div class="bucket-count" style="color:var(--accent)">${buckets.learning}</div>
+            <div class="bucket-label">Learning</div>
+          </div>
+          <div class="bucket-chip">
+            <div class="bucket-count" style="color:var(--success)">${buckets.mastered}</div>
+            <div class="bucket-label">Mastered</div>
+          </div>
+        </div>
+        <div class="text-xs text-2 mt-8">Total: ${QUESTIONS.length} questions</div>
+        <div class="progress-bar mt-8">
+          <div class="progress-fill success" style="width:${Math.round(buckets.mastered/QUESTIONS.length*100)}%"></div>
+        </div>
+      </div>
+
+      <!-- Domain Accuracy -->
+      <div class="card" style="grid-column:1/-1">
+        <div class="text-sm text-2 mb-16">Domain Accuracy</div>
+        ${domainBars}
+      </div>
+
+      <!-- Session History -->
+      <div class="card">
+        <div class="text-sm text-2 mb-8">Recent Sessions</div>
+        ${sessionRows}
+      </div>
+
+      <!-- Weak Areas -->
+      <div class="card">
+        <div class="text-sm text-2 mb-8">Top Weak Areas</div>
+        ${weakPanel}
+      </div>
+    </div>
+
+    <div style="margin-top:24px;text-align:center">
+      <button class="btn btn-primary btn-lg" onclick="Router.navigate('mode_select')">Start Quiz →</button>
+    </div>
+  `;
+}
+
+function handleImport(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      Storage.importProgress(ev.target.result);
+      showToast('Progress imported successfully!');
+      Router.navigate('dashboard');
+    } catch(err) {
+      alert('Import failed: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SCREEN: MODE SELECT
+// ═══════════════════════════════════════════════════════════════
+function renderModeSelect(app) {
+  app.innerHTML = `
+    <button class="btn btn-ghost btn-sm mb-16" onclick="Router.navigate('dashboard')">← Dashboard</button>
+    <h2>Choose Study Mode</h2>
+    <p class="text-sm text-2 mt-4">Each mode is designed for a different phase of your preparation.</p>
+
+    <div class="mode-grid mt-24">
+      <div class="mode-card" onclick="Router.navigate('exam_config')">
+        <div class="mode-icon">📝</div>
+        <div class="mode-title">Exam Simulation</div>
+        <div class="mode-desc">Domain-weighted questions with a timer. Feedback shown at the end — just like the real exam.</div>
+        <div class="mt-8"><span class="badge badge-accent">Scaled 100–1000</span></div>
+      </div>
+      <div class="mode-card" onclick="Router.navigate('drill_config')">
+        <div class="mode-icon">🎯</div>
+        <div class="mode-title">Domain Drill</div>
+        <div class="mode-desc">Focus on one domain at a time. Immediate feedback with full explanations after every answer.</div>
+        <div class="mt-8"><span class="badge badge-neutral">Untimed</span></div>
+      </div>
+      <div class="mode-card" onclick="Router.navigate('weak_config')">
+        <div class="mode-icon">💪</div>
+        <div class="mode-title">Weak Areas</div>
+        <div class="mode-desc">Surfaces questions you've missed or never seen. Spaced repetition keeps hard questions coming back.</div>
+        <div class="mt-8"><span class="badge badge-neutral">Untimed</span></div>
+      </div>
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SCREEN: EXAM CONFIG
+// ═══════════════════════════════════════════════════════════════
+let _examCount = 60;
+let _examTimerMode = 'overall';
+let _examTimerMinutes = 90;
+
+function renderExamConfig(app) {
+  app.innerHTML = `
+    <button class="btn btn-ghost btn-sm mb-16" onclick="Router.navigate('mode_select')">← Back</button>
+    <h2>Exam Simulation</h2>
+    <p class="text-sm text-2 mt-4">Configure your practice exam.</p>
+
+    <div class="config-panel card mt-16">
+      <div class="config-section">
+        <div class="config-label">Question Count</div>
+        <div class="preset-row" id="exam-count-presets">
+          <button class="preset-btn" data-count="25" onclick="setExamCount(25)">25</button>
+          <button class="preset-btn" data-count="50" onclick="setExamCount(50)">50</button>
+          <button class="preset-btn active" data-count="60" onclick="setExamCount(60)">60 <span style="font-size:0.72rem;opacity:0.8">(Real Exam)</span></button>
+          <button class="preset-btn" data-count="100" onclick="setExamCount(100)">100</button>
+          <input type="number" class="custom-input" id="exam-count-custom"
+            placeholder="Custom" min="1" max="1157" value=""
+            oninput="setExamCountCustom(this.value)" />
+        </div>
+        <div id="exam-count-error" class="input-error" style="display:none"></div>
+        <div class="text-xs text-2 mt-8">Selected: <strong id="exam-count-display">60 questions</strong></div>
+      </div>
+
+      <div class="config-section">
+        <div class="config-label">Timer Mode</div>
+        <div class="timer-option ${_examTimerMode==='per_question'?'selected':''}"
+             onclick="setTimerMode('per_question')" id="timer-perq">
+          <input type="radio" name="timer" value="per_question" ${_examTimerMode==='per_question'?'checked':''}>
+          <div>
+            <div style="font-weight:600">Per-Question Timer</div>
+            <div class="text-sm text-2">1.5 minutes per question. Auto-advances on timeout.</div>
+          </div>
+        </div>
+        <div class="timer-option ${_examTimerMode==='overall'?'selected':''}"
+             onclick="setTimerMode('overall')" id="timer-overall">
+          <input type="radio" name="timer" value="overall" ${_examTimerMode==='overall'?'checked':''}>
+          <div>
+            <div style="font-weight:600">Overall Timer</div>
+            <div class="text-sm text-2">Set total time. Exam auto-submits when time runs out.</div>
+          </div>
+        </div>
+        <div id="overall-time-wrap" class="mt-8" style="display:${_examTimerMode==='overall'?'flex':'none'};align-items:center;gap:10px">
+          <input type="number" class="custom-input" id="overall-minutes"
+            value="${_examTimerMinutes}" min="1" max="600"
+            oninput="setOverallMinutes(this.value)" style="width:80px"/>
+          <span class="text-sm text-2">minutes</span>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="start-exam-btn" onclick="startExam()">Start Exam →</button>
+    </div>
+  `;
+}
+
+function setExamCount(n) {
+  _examCount = n;
+  document.querySelectorAll('#exam-count-presets .preset-btn').forEach(b => {
+    b.classList.toggle('active', +b.dataset.count === n);
+  });
+  document.getElementById('exam-count-custom').value = '';
+  document.getElementById('exam-count-display').textContent = `${n} questions`;
+  document.getElementById('exam-count-error').style.display = 'none';
+}
+
+function setExamCountCustom(val) {
+  const n = parseInt(val);
+  const errEl = document.getElementById('exam-count-error');
+  document.querySelectorAll('#exam-count-presets .preset-btn').forEach(b => b.classList.remove('active'));
+  if (!val) { _examCount = 60; return; }
+  if (isNaN(n) || n < 1 || n > 1157) {
+    errEl.textContent = 'Enter a number between 1 and 1157';
+    errEl.style.display = 'block';
+    document.getElementById('exam-count-display').textContent = '—';
+    return;
+  }
+  errEl.style.display = 'none';
+  _examCount = n;
+  document.getElementById('exam-count-display').textContent = `${n} questions`;
+}
+
+function setTimerMode(mode) {
+  _examTimerMode = mode;
+  document.getElementById('timer-perq').classList.toggle('selected', mode === 'per_question');
+  document.getElementById('timer-overall').classList.toggle('selected', mode === 'overall');
+  document.getElementById('timer-perq').querySelector('input').checked = mode === 'per_question';
+  document.getElementById('timer-overall').querySelector('input').checked = mode === 'overall';
+  document.getElementById('overall-time-wrap').style.display = mode === 'overall' ? 'flex' : 'none';
+}
+
+function setOverallMinutes(val) {
+  const n = parseInt(val);
+  if (!isNaN(n) && n >= 1) _examTimerMinutes = n;
+}
+
+function startExam() {
+  const questions = Engine.selectExamQuestions(_examCount);
+  const timerValue = _examTimerMode === 'per_question'
+    ? 90  // 1.5 min per question
+    : _examTimerMinutes * 60;
+  SESSION = createSession('exam', questions, _examTimerMode, timerValue);
+  Router.navigate('quiz');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SCREEN: DRILL CONFIG
+// ═══════════════════════════════════════════════════════════════
+let _drillDomain = 'D1';
+let _drillCount = 25;
+
+const DOMAIN_INFO = {
+  D1: { name: 'Agentic Architecture & Orchestration', weight: '27%' },
+  D2: { name: 'Tool Design & MCP Integration',         weight: '18%' },
+  D3: { name: 'Claude Code Configuration',             weight: '20%' },
+  D4: { name: 'Prompt Engineering',                    weight: '20%' },
+  D5: { name: 'Context Management & Reliability',      weight: '15%' },
+};
+
+function renderDrillConfig(app) {
+  const domainOptions = Object.entries(DOMAIN_INFO).map(([code, info]) => {
+    const count = Engine.DOMAIN_PURE[code].length;
+    return `<div class="domain-option ${_drillDomain===code?'selected':''}"
+      onclick="setDrillDomain('${code}')" id="do-${code}">
+      <div>
+        <div style="font-weight:600">${code} — ${esc(info.name)}</div>
+        <div class="text-xs text-2">${count} questions · ${info.weight} of exam</div>
+      </div>
+      <span class="badge ${_drillDomain===code?'badge-accent':'badge-neutral'}">${code}</span>
+    </div>`;
+  }).join('');
+
+  app.innerHTML = `
+    <button class="btn btn-ghost btn-sm mb-16" onclick="Router.navigate('mode_select')">← Back</button>
+    <h2>Domain Drill</h2>
+    <p class="text-sm text-2 mt-4">Pick a domain and drill questions with immediate feedback.</p>
+
+    <div class="config-panel card mt-16">
+      <div class="config-section">
+        <div class="config-label">Select Domain</div>
+        ${domainOptions}
+      </div>
+
+      <div class="config-section">
+        <div class="config-label">Question Count</div>
+        <div class="preset-row" id="drill-count-presets">
+          <button class="preset-btn" data-count="10" onclick="setDrillCount(10)">10</button>
+          <button class="preset-btn active" data-count="25" onclick="setDrillCount(25)">25</button>
+          <button class="preset-btn" data-count="all" onclick="setDrillCount(-1)">All</button>
+          <input type="number" class="custom-input" id="drill-count-custom"
+            placeholder="Custom" min="1"
+            oninput="setDrillCountCustom(this.value)" />
+        </div>
+        <div id="drill-count-error" class="input-error" style="display:none"></div>
+        <div class="text-xs text-2 mt-8">Selected: <strong id="drill-count-display">25 questions</strong></div>
+      </div>
+
+      <button class="btn btn-primary" onclick="startDrill()">Start Drill →</button>
+    </div>
+  `;
+}
+
+function setDrillDomain(code) {
+  _drillDomain = code;
+  document.querySelectorAll('.domain-option').forEach(el => {
+    const isThis = el.id === `do-${code}`;
+    el.classList.toggle('selected', isThis);
+    el.querySelector('.badge').className = `badge ${isThis ? 'badge-accent' : 'badge-neutral'}`;
+  });
+  // Update all count display
+  if (_drillCount === -1) {
+    document.getElementById('drill-count-display').textContent =
+      `${Engine.DOMAIN_PURE[code].length} questions (all)`;
+  }
+}
+
+function setDrillCount(n) {
+  _drillCount = n;
+  document.querySelectorAll('#drill-count-presets .preset-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.count == (n === -1 ? 'all' : n));
+  });
+  document.getElementById('drill-count-custom').value = '';
+  document.getElementById('drill-count-error').style.display = 'none';
+  const count = n === -1 ? Engine.DOMAIN_PURE[_drillDomain].length : n;
+  document.getElementById('drill-count-display').textContent = `${count} questions${n===-1?' (all)':''}`;
+}
+
+function setDrillCountCustom(val) {
+  const maxCount = Engine.DOMAIN_PURE[_drillDomain].length;
+  const n = parseInt(val);
+  const errEl = document.getElementById('drill-count-error');
+  document.querySelectorAll('#drill-count-presets .preset-btn').forEach(b => b.classList.remove('active'));
+  if (!val) { _drillCount = 25; return; }
+  if (isNaN(n) || n < 1 || n > maxCount) {
+    errEl.textContent = `Enter a number between 1 and ${maxCount}`;
+    errEl.style.display = 'block';
+    return;
+  }
+  errEl.style.display = 'none';
+  _drillCount = n;
+  document.getElementById('drill-count-display').textContent = `${n} questions`;
+}
+
+function startDrill() {
+  const maxCount = Engine.DOMAIN_PURE[_drillDomain].length;
+  const count = _drillCount === -1 ? maxCount : Math.min(_drillCount, maxCount);
+  const questions = Engine.selectDrillQuestions(_drillDomain, count);
+  SESSION = createSession('drill', questions, null, null);
+  SESSION.domain = _drillDomain;
+  Router.navigate('quiz');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SCREEN: WEAK CONFIG
+// ═══════════════════════════════════════════════════════════════
+let _weakCount = 20;
+
+function renderWeakConfig(app) {
+  const poolSize = Engine.getWeakPoolSize();
+
+  app.innerHTML = `
+    <button class="btn btn-ghost btn-sm mb-16" onclick="Router.navigate('mode_select')">← Back</button>
+    <h2>Weak Areas</h2>
+    <p class="text-sm text-2 mt-4">Practice the questions you've missed or never seen.</p>
+
+    <div class="config-panel card mt-16">
+      ${poolSize === 0 ? `
+        <div class="empty-state">
+          <div class="empty-icon">🎉</div>
+          <div>All questions mastered! Use Domain Drill to keep sharp.</div>
+        </div>
+      ` : `
+        <div class="config-section">
+          <div class="text-sm text-2 mb-8">
+            Available pool: <strong>${poolSize} questions</strong>
+            (New + Learning buckets)
+          </div>
+        </div>
+        <div class="config-section">
+          <div class="config-label">Question Count</div>
+          <div class="preset-row" id="weak-count-presets">
+            <button class="preset-btn active" data-count="20" onclick="setWeakCount(20)">20</button>
+            <input type="number" class="custom-input" id="weak-count-custom"
+              placeholder="Custom" min="1" max="${poolSize}"
+              oninput="setWeakCountCustom(this.value, ${poolSize})" />
+          </div>
+          <div id="weak-count-error" class="input-error" style="display:none"></div>
+          <div class="text-xs text-2 mt-8">Selected: <strong id="weak-count-display">20 questions</strong></div>
+        </div>
+        <button class="btn btn-primary" onclick="startWeak(${poolSize})">Start Practice →</button>
+      `}
+    </div>
+  `;
+}
+
+function setWeakCount(n) {
+  _weakCount = n;
+  document.querySelectorAll('#weak-count-presets .preset-btn').forEach(b => {
+    b.classList.toggle('active', +b.dataset.count === n);
+  });
+  document.getElementById('weak-count-custom').value = '';
+  document.getElementById('weak-count-error').style.display = 'none';
+  document.getElementById('weak-count-display').textContent = `${n} questions`;
+}
+
+function setWeakCountCustom(val, max) {
+  const n = parseInt(val);
+  const errEl = document.getElementById('weak-count-error');
+  document.querySelectorAll('#weak-count-presets .preset-btn').forEach(b => b.classList.remove('active'));
+  if (!val) { _weakCount = 20; return; }
+  if (isNaN(n) || n < 1 || n > max) {
+    errEl.textContent = `Enter a number between 1 and ${max}`;
+    errEl.style.display = 'block';
+    return;
+  }
+  errEl.style.display = 'none';
+  _weakCount = n;
+  document.getElementById('weak-count-display').textContent = `${n} questions`;
+}
+
+function startWeak(poolSize) {
+  const count = Math.min(_weakCount, poolSize);
+  const questions = Engine.selectWeakQuestions(count);
+  if (questions.length === 0) {
+    showToast('No weak questions available. Try Domain Drill instead.');
+    return;
+  }
+  SESSION = createSession('weak', questions, null, null);
+  Router.navigate('quiz');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SCREEN: QUIZ
+// ═══════════════════════════════════════════════════════════════
+let _navOpen = false;
+let _explanationVisible = false;
+let _currentTimerDuration = 0;
+
+function renderQuiz(app) {
+  if (!SESSION || SESSION.completed) {
+    Router.navigate('dashboard'); return;
+  }
+  _navOpen = false;
+  _explanationVisible = false;
+
+  const q = SESSION.questions[SESSION.currentIndex];
+  const total = SESSION.questions.length;
+  const idx = SESSION.currentIndex;
+  const answer = SESSION.answers[q.id];
+  const isFlagged = SESSION.flags.has(q.id);
+  const isExam = SESSION.mode === 'exam';
+  const showFeedback = !isExam && answer !== undefined;
+  const prog = Storage.getProgress(q.id);
+  const bucket = Storage.getBucket(prog);
+
+  // Build choices HTML
+  const letters = ['A','B','C','D'];
+  const choicesHTML = letters.map(letter => {
+    let cls = 'choice-btn';
+    const isSelected = answer && answer.letter === letter;
+    const isCorrect  = letter === q.answer;
+    if (showFeedback) {
+      if (isCorrect) cls += ' correct';
+      else if (isSelected) cls += ' wrong';
+      cls += ' '; // disabled visually
+    } else if (isSelected) {
+      cls += ' selected';
+    }
+    const disabled = (showFeedback || (isExam && answer !== undefined && !answer.tentative)) ? 'disabled' : '';
+    return `<button class="${cls}" ${disabled}
+      onclick="selectAnswer('${letter}')" data-letter="${letter}">
+      <span class="choice-letter">${letter}</span>
+      <span class="choice-text">${esc(q.choices[letter])}</span>
+    </button>`;
+  }).join('');
+
+  // Explanation (drill/weak only, after answer)
+  let explanationHTML = '';
+  if (showFeedback) {
+    const correct = answer.correct;
+    explanationHTML = `
+      <div class="explanation-panel" id="explanation-panel">
+        <div class="explanation-label">${correct ? '✓ Correct' : '✗ Incorrect — Correct Answer: ' + q.answer}</div>
+        ${esc(q.explanation)}
+      </div>`;
+  }
+
+  // Timer display
+  let timerHTML = '';
+  if (SESSION.timerMode === 'per_question') {
+    timerHTML = `
+      <div>
+        <div class="timer-display" id="timer-display">${formatTime(SESSION.timerValue)}</div>
+        <div class="progress-bar mt-4" style="width:120px">
+          <div class="progress-fill" id="timer-bar" style="width:100%"></div>
+        </div>
+      </div>`;
+  } else if (SESSION.timerMode === 'overall') {
+    const elapsed = (Date.now() - SESSION.startTime) / 1000;
+    const remaining = Math.max(0, SESSION.timerValue - elapsed);
+    timerHTML = `
+      <div>
+        <div class="timer-display" id="timer-display">${formatTime(remaining)}</div>
+        <div class="progress-bar mt-4" style="width:120px">
+          <div class="progress-fill" id="timer-bar" style="width:${remaining/SESSION.timerValue*100}%"></div>
+        </div>
+      </div>`;
+  }
+
+  // Build navigator cells
+  const navCells = SESSION.questions.map((sq, i) => {
+    let cls = 'nav-cell';
+    if (i === idx) cls += ' current';
+    else if (SESSION.answers[sq.id]) cls += ' answered';
+    if (SESSION.flags.has(sq.id)) cls += ' flagged';
+    return `<div class="${cls}" onclick="navigateTo(${i})">${i+1}</div>`;
+  }).join('');
+
+  // Progress bar
+  const progressPct = Math.round((idx + 1) / total * 100);
+
+  // Bucket badge
+  const bucketColors = { new: 'badge-neutral', learning: 'badge-accent', mastered: 'badge-success' };
+
+  app.innerHTML = `
+    <div class="quiz-header">
+      <div class="quiz-meta">
+        <span class="q-counter">Question ${idx+1} of ${total}</span>
+        <span class="badge ${bucketColors[bucket]} q-domain-badge">${q.domain}</span>
+        ${prog.times_seen > 0 ? `<span class="text-xs text-2">${prog.times_correct}/${prog.times_seen} correct</span>` : ''}
+      </div>
+      ${timerHTML}
+    </div>
+
+    <div class="progress-bar mb-16">
+      <div class="progress-fill" style="width:${progressPct}%"></div>
+    </div>
+
+    <div class="question-text">${esc(q.question)}</div>
+
+    <div class="choices" id="choices-container">
+      ${choicesHTML}
+    </div>
+
+    ${explanationHTML}
+
+    <div class="quiz-actions">
+      <div class="quiz-actions-left">
+        <button class="flag-btn ${isFlagged?'flagged':''}" id="flag-btn"
+          onclick="toggleFlag()" title="Flag for review">
+          ${isFlagged ? '🚩 Flagged' : '⚑ Flag'}
+        </button>
+        <button class="nav-toggle-btn" onclick="toggleNav()">
+          ${_navOpen ? '▲ Hide Navigator' : '▼ Navigator'}
+        </button>
+      </div>
+      <div style="display:flex;gap:8px">
+        ${idx > 0 ? `<button class="btn btn-secondary btn-sm" onclick="navigateTo(${idx-1})">← Prev</button>` : ''}
+        ${(showFeedback || (isExam && answer !== undefined))
+          ? (idx < total - 1
+              ? `<button class="btn btn-primary" id="next-btn" onclick="navigateTo(${idx+1})">Next →</button>`
+              : `<button class="btn btn-primary" id="next-btn" onclick="submitSession()">Submit →</button>`)
+          : (isExam && answer === undefined
+              ? `<button class="btn btn-secondary btn-sm" onclick="navigateTo(${Math.min(idx+1, total-1)})">Skip →</button>`
+              : '')
+        }
+      </div>
+    </div>
+
+    <div id="q-navigator" class="${_navOpen ? 'open' : ''}">
+      <div class="text-xs text-2 mb-8">Click a number to jump to that question</div>
+      <div class="nav-grid">${navCells}</div>
+    </div>
+
+    <div class="kbd-hint">
+      <kbd class="kbd">A</kbd><kbd class="kbd">B</kbd><kbd class="kbd">C</kbd><kbd class="kbd">D</kbd> select
+      · <kbd class="kbd">Enter</kbd> confirm/next
+      ${!isExam ? '· <kbd class="kbd">Space</kbd> next' : ''}
+      · <kbd class="kbd">F</kbd> flag
+    </div>
+  `;
+
+  // Start timers
+  if (SESSION.timerMode === 'per_question' && !answer) {
+    _currentTimerDuration = SESSION.timerValue;
+    timerStart(SESSION.timerValue,
+      rem => updateTimerDisplay(rem, SESSION.timerValue),
+      () => { autoSubmitQuestion(); }
+    );
+  } else if (SESSION.timerMode === 'overall') {
+    const elapsed = (Date.now() - SESSION.startTime) / 1000;
+    const remaining = Math.max(0, SESSION.timerValue - elapsed);
+    if (remaining > 0) {
+      timerStart(remaining,
+        rem => updateTimerDisplay(rem, SESSION.timerValue),
+        () => { submitSession(); }
+      );
+    }
+  }
+
+  // Keyboard handler
+  setKeyboardHandler(quizKeyHandler);
+}
+
+function updateTimerDisplay(remaining, total) {
+  const disp = document.getElementById('timer-display');
+  const bar  = document.getElementById('timer-bar');
+  if (!disp) return;
+  disp.textContent = formatTime(remaining);
+  const pct = total > 0 ? (remaining / total) * 100 : 0;
+  if (bar) bar.style.width = pct + '%';
+  disp.className = 'timer-display' + (remaining < 30 ? ' danger' : remaining < 60 ? ' warn' : '');
+  if (bar) {
+    bar.className = 'progress-fill' + (remaining < 30 ? ' danger' : remaining < 60 ? ' ' : '');
+  }
+}
+
+function autoSubmitQuestion() {
+  const q = SESSION.questions[SESSION.currentIndex];
+  if (!SESSION.answers[q.id]) {
+    SESSION.answers[q.id] = { letter: null, correct: false };
+    Storage.updateProgress(q.id, false);
+  }
+  const idx = SESSION.currentIndex;
+  const total = SESSION.questions.length;
+  if (idx < total - 1) {
+    SESSION.currentIndex++;
+    renderQuiz(document.getElementById('app'));
+  } else {
+    submitSession();
+  }
+}
+
+function selectAnswer(letter) {
+  const q = SESSION.questions[SESSION.currentIndex];
+  const isExam = SESSION.mode === 'exam';
+
+  // In exam mode: allow changing before "confirming" — we treat clicking as tentative selection
+  // In drill/weak: clicking is final
+  if (isExam) {
+    // Allow re-selection in exam mode; re-render quiz to show Next button
+    SESSION.answers[q.id] = { letter, correct: letter === q.answer, tentative: true };
+    renderQuiz(document.getElementById('app'));
+  } else {
+    // Drill / Weak: final selection, show feedback
+    if (SESSION.answers[q.id]) return; // already answered
+    const correct = letter === q.answer;
+    SESSION.answers[q.id] = { letter, correct };
+    timerClear();
+    Storage.updateProgress(q.id, correct);
+    renderQuiz(document.getElementById('app'));
+  }
+}
+
+function navigateTo(idx) {
+  if (idx < 0 || idx >= SESSION.questions.length) return;
+  // Commit any tentative exam-mode answer for the current question before navigating
+  if (SESSION.mode === 'exam') {
+    const curQ = SESSION.questions[SESSION.currentIndex];
+    const curAns = SESSION.answers[curQ.id];
+    if (curAns && curAns.tentative) {
+      curAns.tentative = false;
+      Storage.updateProgress(curQ.id, curAns.correct);
+    }
+  }
+  timerClear();
+  SESSION.currentIndex = idx;
+  renderQuiz(document.getElementById('app'));
+}
+
+function toggleFlag() {
+  const q = SESSION.questions[SESSION.currentIndex];
+  if (SESSION.flags.has(q.id)) SESSION.flags.delete(q.id);
+  else SESSION.flags.add(q.id);
+  const btn = document.getElementById('flag-btn');
+  if (btn) {
+    const isFlagged = SESSION.flags.has(q.id);
+    btn.className = `flag-btn${isFlagged?' flagged':''}`;
+    btn.textContent = isFlagged ? '🚩 Flagged' : '⚑ Flag';
+  }
+  // Update navigator cell
+  const cells = document.querySelectorAll('.nav-cell');
+  cells.forEach((cell, i) => {
+    const sq = SESSION.questions[i];
+    if (sq.id === q.id) cell.classList.toggle('flagged', SESSION.flags.has(sq.id));
+  });
+}
+
+function toggleNav() {
+  _navOpen = !_navOpen;
+  const nav = document.getElementById('q-navigator');
+  const btn = document.querySelector('.nav-toggle-btn');
+  if (nav) nav.classList.toggle('open', _navOpen);
+  if (btn) btn.textContent = _navOpen ? '▲ Hide Navigator' : '▼ Navigator';
+}
+
+function quizKeyHandler(e) {
+  const tag = e.target.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+  const key = e.key.toUpperCase();
+  const q = SESSION && SESSION.questions[SESSION.currentIndex];
+  if (!q) return;
+  const isExam = SESSION.mode === 'exam';
+  const answered = SESSION.answers[q.id] && !SESSION.answers[q.id].tentative;
+  const tentative = SESSION.answers[q.id] && SESSION.answers[q.id].tentative;
+
+  if (['A','B','C','D'].includes(key) && !answered) {
+    e.preventDefault();
+    selectAnswer(key);
+    return;
+  }
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    if (isExam && tentative) {
+      // Confirm answer in exam mode
+      SESSION.answers[q.id].tentative = false;
+      Storage.updateProgress(q.id, SESSION.answers[q.id].correct);
+      const idx = SESSION.currentIndex;
+      const total = SESSION.questions.length;
+      timerClear();
+      if (idx < total - 1) navigateTo(idx + 1);
+      else submitSession();
+    } else if (answered || (!isExam && SESSION.answers[q.id])) {
+      const idx = SESSION.currentIndex;
+      const total = SESSION.questions.length;
+      if (idx < total - 1) navigateTo(idx + 1);
+      else submitSession();
+    }
+    return;
+  }
+  if (e.key === ' ' && !isExam) {
+    e.preventDefault();
+    if (SESSION.answers[q.id]) {
+      const idx = SESSION.currentIndex;
+      const total = SESSION.questions.length;
+      if (idx < total - 1) navigateTo(idx + 1);
+      else submitSession();
+    }
+    return;
+  }
+  if (key === 'F') {
+    e.preventDefault();
+    toggleFlag();
+  }
+}
+
+function submitSession() {
+  timerClear();
+  if (!SESSION || SESSION.completed) return;
+  SESSION.completed = true;
+
+  // For exam mode: finalize any tentative answers and update progress
+  if (SESSION.mode === 'exam') {
+    for (const q of SESSION.questions) {
+      const ans = SESSION.answers[q.id];
+      if (ans) {
+        if (ans.tentative) {
+          ans.tentative = false;
+          Storage.updateProgress(q.id, ans.correct);
+        }
+      }
+    }
+    // Score
+    const answered = SESSION.questions.filter(q => SESSION.answers[q.id] && SESSION.answers[q.id].letter !== null);
+    const correct  = answered.filter(q => SESSION.answers[q.id].correct).length;
+    const total    = SESSION.questions.length;
+    const score    = Engine.calculateScaledScore(correct, total);
+    Storage.addSession({
+      date: todayISO(),
+      mode: 'exam',
+      score,
+      domain: null,
+      question_count: total
+    });
+    Router.navigate('results', { score, correct, total });
+  } else {
+    const total   = SESSION.questions.length;
+    const correct = SESSION.questions.filter(q => SESSION.answers[q.id] && SESSION.answers[q.id].correct).length;
+    const accuracy = total > 0 ? Math.round(correct / total * 100) : 0;
+    Storage.addSession({
+      date: todayISO(),
+      mode: SESSION.mode,
+      score: accuracy,
+      domain: SESSION.domain,
+      question_count: total
+    });
+    Router.navigate('summary', { correct, total, accuracy });
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SCREEN: RESULTS (exam)
+// ═══════════════════════════════════════════════════════════════
+let _resultsFilter = 'all';
+
+function renderResults(app, params) {
+  if (!params || !SESSION) { Router.navigate('dashboard'); return; }
+  const { score, correct, total } = params;
+  const passing = Engine.isPassing(score);
+
+  // Per-domain breakdown
+  const domainBreakdown = Engine.DOMAIN_CODES.map(code => {
+    const qs = SESSION.questions.filter(q => q.domain === code || (q.domain === 'SQ'));
+    const att = qs.filter(q => SESSION.answers[q.id] && SESSION.answers[q.id].letter !== null);
+    const cor = att.filter(q => SESSION.answers[q.id].correct);
+    const pct = att.length > 0 ? Math.round(cor.length / att.length * 100) : null;
+    return { code, name: DOMAIN_INFO[code]?.name || code, total: qs.length, attempted: att.length, correct: cor.length, pct };
+  }).filter(d => d.total > 0);
+
+  const domainTableRows = domainBreakdown.map(d => `
+    <tr>
+      <td>${d.code}</td>
+      <td>${esc(d.name)}</td>
+      <td>${d.attempted}/${d.total}</td>
+      <td>${d.correct}</td>
+      <td>${d.pct !== null ? d.pct + '%' : '—'}</td>
+    </tr>`).join('');
+
+  app.innerHTML = `
+    <div class="score-hero">
+      <div class="text-sm text-2 mb-8">Your Score</div>
+      <div class="score-number">${score}</div>
+      <div class="text-xs text-2 mt-4">out of 1,000</div>
+      <div class="pass-badge ${passing ? 'pass' : 'fail'} mt-8">${passing ? '✓ PASS' : '✗ FAIL'}</div>
+      <div class="text-sm mt-16">${correct} correct out of ${total} questions (${Math.round(correct/total*100)}%)</div>
+      <div class="text-sm text-2 mt-4">Pass threshold: 720/1000</div>
+    </div>
+
+    <div class="card mt-16">
+      <h3 class="mb-16">Domain Breakdown</h3>
+      <table class="results-table">
+        <thead><tr><th>Domain</th><th>Name</th><th>Attempted</th><th>Correct</th><th>Score</th></tr></thead>
+        <tbody>${domainTableRows}</tbody>
+      </table>
+    </div>
+
+    <div class="card mt-16">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <h3>Question Review</h3>
+        <div class="filter-row">
+          <button class="filter-btn active" onclick="setResultsFilter('all', this)">All (${total})</button>
+          <button class="filter-btn" onclick="setResultsFilter('incorrect', this)">
+            Incorrect (${SESSION.questions.filter(q => SESSION.answers[q.id] && !SESSION.answers[q.id].correct).length})
+          </button>
+          <button class="filter-btn" onclick="setResultsFilter('flagged', this)">
+            Flagged (${SESSION.flags.size})
+          </button>
+        </div>
+      </div>
+      <div id="review-list">
+        ${buildReviewList('all')}
+      </div>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-top:24px;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="Router.navigate('mode_select')">New Quiz</button>
+      <button class="btn btn-secondary" onclick="Router.navigate('dashboard')">Dashboard</button>
+    </div>
+  `;
+}
+
+function buildReviewList(filter) {
+  if (!SESSION) return '';
+  let qs = SESSION.questions;
+  if (filter === 'incorrect') qs = qs.filter(q => SESSION.answers[q.id] && !SESSION.answers[q.id].correct);
+  if (filter === 'flagged')   qs = qs.filter(q => SESSION.flags.has(q.id));
+
+  if (qs.length === 0) return '<div class="text-sm text-2">No questions match this filter.</div>';
+
+  return qs.map((q, i) => {
+    const ans = SESSION.answers[q.id];
+    const userLetter = ans ? ans.letter : null;
+    const isCorrect = ans && ans.correct;
+    const isFlagged = SESSION.flags.has(q.id);
+
+    const choicesHTML = ['A','B','C','D'].map(letter => {
+      let cls = 'review-choice neutral';
+      if (letter === q.answer) cls = 'review-choice correct-ans';
+      else if (letter === userLetter && !isCorrect) cls = 'review-choice user-wrong';
+      const marker = letter === q.answer ? '✓' : (letter === userLetter && !isCorrect ? '✗' : ' ');
+      return `<div class="${cls}"><span style="font-weight:700;width:20px">${marker}</span><span><strong>${letter})</strong> ${esc(q.choices[letter])}</span></div>`;
+    }).join('');
+
+    return `<div class="review-item ${isCorrect ? '' : 'incorrect'}">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="badge ${isCorrect ? 'badge-success' : 'badge-danger'}">${isCorrect ? '✓' : '✗'}</span>
+        <span class="text-xs text-2">${q.id} · ${q.domain}</span>
+        ${isFlagged ? '<span class="badge badge-warn">🚩</span>' : ''}
+        ${!ans || ans.letter === null ? '<span class="badge badge-neutral">Unanswered</span>' : ''}
+      </div>
+      <div class="review-q-text">${esc(q.question)}</div>
+      <div class="review-choices">${choicesHTML}</div>
+      <div class="review-explanation">${esc(q.explanation)}</div>
+    </div>`;
+  }).join('');
+}
+
+function setResultsFilter(filter, btn) {
+  _resultsFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const list = document.getElementById('review-list');
+  if (list) list.innerHTML = buildReviewList(filter);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SCREEN: SUMMARY (drill / weak)
+// ═══════════════════════════════════════════════════════════════
+function renderSummary(app, params) {
+  if (!params || !SESSION) { Router.navigate('dashboard'); return; }
+  const { correct, total, accuracy } = params;
+
+  const missedQs = SESSION.questions.filter(q =>
+    SESSION.answers[q.id] && !SESSION.answers[q.id].correct
+  );
+  const unanswered = SESSION.questions.filter(q => !SESSION.answers[q.id]);
+
+  const missedHTML = missedQs.length === 0
+    ? '<div class="text-sm text-2">No incorrect answers! 🎉</div>'
+    : missedQs.map(q => {
+        const ans = SESSION.answers[q.id];
+        return `<div class="review-item incorrect">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="badge badge-danger">✗</span>
+            <span class="text-xs text-2">${q.id} · ${q.domain}</span>
+          </div>
+          <div class="review-q-text">${esc(q.question)}</div>
+          <div style="font-size:0.85rem;margin-bottom:6px">
+            <span style="color:var(--danger)">Your answer: ${ans?.letter || '—'}) ${ans?.letter ? esc(q.choices[ans.letter]) : 'No answer'}</span>
+            <br>
+            <span style="color:var(--success)">Correct: ${q.answer}) ${esc(q.choices[q.answer])}</span>
+          </div>
+          <div class="review-explanation">${esc(q.explanation)}</div>
+        </div>`;
+      }).join('');
+
+  app.innerHTML = `
+    <div class="score-hero">
+      <div class="text-sm text-2 mb-8">${SESSION.mode === 'drill' ? 'Domain Drill' : 'Weak Areas'} Complete</div>
+      <div class="score-number" style="font-size:3.5rem">${accuracy}%</div>
+      <div class="text-sm mt-16">${correct} correct out of ${total} questions</div>
+      ${unanswered.length > 0 ? `<div class="text-xs text-2 mt-4">${unanswered.length} unanswered</div>` : ''}
+    </div>
+
+    ${missedQs.length > 0 ? `
+      <div class="card mt-16">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <h3>Missed Questions (${missedQs.length})</h3>
+        </div>
+        ${missedHTML}
+      </div>
+    ` : `<div class="card mt-16"><div class="empty-state"><div class="empty-icon">🎉</div><div>Perfect score!</div></div></div>`}
+
+    <div style="display:flex;gap:12px;margin-top:24px;flex-wrap:wrap">
+      ${missedQs.length > 0 ? `<button class="btn btn-primary" onclick="retryMissed()">Retry Missed (${missedQs.length})</button>` : ''}
+      <button class="btn btn-secondary" onclick="Router.navigate('mode_select')">New Quiz</button>
+      <button class="btn btn-ghost" onclick="Router.navigate('dashboard')">Dashboard</button>
+    </div>
+  `;
+}
+
+function retryMissed() {
+  const missedQs = SESSION.questions.filter(q =>
+    SESSION.answers[q.id] && !SESSION.answers[q.id].correct
+  );
+  if (missedQs.length === 0) return;
+  SESSION = createSession(SESSION.mode || 'drill', missedQs, null, null);
+  Router.navigate('quiz');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// INLINE TESTS (callable from browser console: runTests())
+// ═══════════════════════════════════════════════════════════════
+function runTests() {
+  const results = [];
+  function test(name, fn) {
+    try { fn(); results.push({ name, pass: true }); }
+    catch(e) { results.push({ name, pass: false, err: e.message }); }
+  }
+
+  // Data tests
+  test('QUESTIONS loaded', () => { if (!QUESTIONS || QUESTIONS.length !== 1157) throw new Error(`Expected 1157, got ${QUESTIONS?.length}`); });
+  test('All have 4 choices', () => {
+    const bad = QUESTIONS.filter(q => Object.keys(q.choices).length !== 4);
+    if (bad.length) throw new Error(`Bad: ${bad[0].id}`);
+  });
+  test('All valid answers', () => {
+    const bad = QUESTIONS.filter(q => !['A','B','C','D'].includes(q.answer));
+    if (bad.length) throw new Error(`Bad: ${bad[0].id}`);
+  });
+
+  // SM-2 tests
+  test('SM-2 correct answer increases interval', () => {
+    Storage.reset();
+    Storage.updateProgress('Q1', true);
+    const rec = Storage.getProgress('Q1');
+    if (rec.sm2_interval < 1) throw new Error('Interval should be >= 1');
+    if (rec.sm2_ease_factor <= 1.3) throw new Error('Ease factor too low');
+  });
+  test('SM-2 incorrect answer resets interval to 1', () => {
+    Storage.reset();
+    Storage.updateProgress('Q1', true);
+    Storage.updateProgress('Q1', true);
+    Storage.updateProgress('Q1', false);
+    const rec = Storage.getProgress('Q1');
+    if (rec.sm2_interval !== 1) throw new Error(`Expected interval 1, got ${rec.sm2_interval}`);
+    if (rec.consecutive_correct !== 0) throw new Error('consecutive_correct should be 0');
+  });
+  test('SM-2 ease factor never below 1.3', () => {
+    Storage.reset();
+    for (let i = 0; i < 10; i++) Storage.updateProgress('Q2', false);
+    const rec = Storage.getProgress('Q2');
+    if (rec.sm2_ease_factor < 1.3) throw new Error(`Ease factor ${rec.sm2_ease_factor} < 1.3`);
+  });
+
+  // Bucket tests
+  test('New → Learning on first answer', () => {
+    Storage.reset();
+    const rec0 = Storage.getProgress('Q10');
+    if (Storage.getBucket(rec0) !== 'new') throw new Error('Should be new');
+    Storage.updateProgress('Q10', true);
+    const rec1 = Storage.getProgress('Q10');
+    if (Storage.getBucket(rec1) !== 'learning') throw new Error(`Should be learning, got ${Storage.getBucket(rec1)}`);
+  });
+  test('Learning → Mastered after 2 consecutive correct', () => {
+    Storage.reset();
+    Storage.updateProgress('Q20', true);
+    Storage.updateProgress('Q20', true);
+    const rec = Storage.getProgress('Q20');
+    if (Storage.getBucket(rec) !== 'mastered') throw new Error(`Should be mastered, got ${Storage.getBucket(rec)}, consecutive=${rec.consecutive_correct}`);
+  });
+  test('Mastered → Learning on wrong answer', () => {
+    Storage.reset();
+    Storage.updateProgress('Q30', true);
+    Storage.updateProgress('Q30', true);
+    Storage.updateProgress('Q30', false);
+    const rec = Storage.getProgress('Q30');
+    if (Storage.getBucket(rec) !== 'learning') throw new Error('Should be learning after wrong');
+  });
+
+  // Scoring tests
+  test('Scaled score: 60/60 = 1000', () => {
+    const s = Engine.calculateScaledScore(60, 60);
+    if (s !== 1000) throw new Error(`Expected 1000, got ${s}`);
+  });
+  test('Scaled score: 0/60 = 100', () => {
+    const s = Engine.calculateScaledScore(0, 60);
+    if (s !== 100) throw new Error(`Expected 100, got ${s}`);
+  });
+  test('Scaled score: 47/60 = 805', () => {
+    const s = Engine.calculateScaledScore(47, 60);
+    if (s !== 805) throw new Error(`Expected 805, got ${s}`);
+  });
+  test('Scaled score: 42/60 = 730 (pass)', () => {
+    const s = Engine.calculateScaledScore(42, 60);
+    if (!Engine.isPassing(s)) throw new Error(`${s} should pass`);
+  });
+  test('Scaled score: 41/60 = 715 (fail)', () => {
+    const s = Engine.calculateScaledScore(41, 60);
+    if (Engine.isPassing(s)) throw new Error(`${s} should fail`);
+  });
+
+  // Domain weighting test
+  test('selectExamQuestions(60) returns 60', () => {
+    const qs = Engine.selectExamQuestions(60);
+    if (qs.length !== 60) throw new Error(`Expected 60, got ${qs.length}`);
+  });
+  test('selectExamQuestions no duplicates', () => {
+    const qs = Engine.selectExamQuestions(60);
+    const ids = qs.map(q => q.id);
+    const unique = new Set(ids);
+    if (unique.size !== ids.length) throw new Error('Duplicate IDs in selection');
+  });
+  test('selectDrillQuestions(D1, 10) returns 10 D1 questions', () => {
+    const qs = Engine.selectDrillQuestions('D1', 10);
+    if (qs.length !== 10) throw new Error(`Expected 10, got ${qs.length}`);
+    if (qs.some(q => q.domain !== 'D1')) throw new Error('Non-D1 question in drill');
+  });
+
+  // Export/Import round-trip
+  test('Export/Import round-trip preserves data', () => {
+    Storage.reset();
+    Storage.updateProgress('Q100', true);
+    Storage.updateProgress('Q200', false);
+    // simulate export/import
+    const exported = { progress: Storage._p(), sessions: Storage.getSessions(), prefs: {} };
+    Storage.reset();
+    Storage.importProgress(JSON.stringify(exported));
+    const rec = Storage.getProgress('Q100');
+    if (rec.times_correct !== 1) throw new Error('times_correct not preserved');
+    const rec2 = Storage.getProgress('Q200');
+    if (rec2.times_incorrect !== 1) throw new Error('times_incorrect not preserved');
+  });
+
+  // Summary
+  const passed = results.filter(r => r.pass).length;
+  console.log(`\n=== TEST RESULTS: ${passed}/${results.length} passed ===`);
+  results.forEach(r => {
+    console.log(`  ${r.pass ? '✅' : '❌'} ${r.name}${r.err ? ' — ' + r.err : ''}`);
+  });
+  return passed === results.length;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════
+(function init() {
+  // Check localStorage
+  if (!Storage.checkAvailable()) {
+    document.getElementById('app').innerHTML = `
+      <div class="card" style="margin-top:40px;text-align:center">
+        <h2>⚠️ localStorage Unavailable</h2>
+        <p class="mt-16 text-sm text-2">Your browser has localStorage disabled (common in private/incognito mode, or file:// protocol in some browsers).</p>
+        <p class="mt-8 text-sm text-2">To fix this, open the file via a local server:</p>
+        <code style="display:block;margin-top:12px;padding:10px;background:var(--surface2);border-radius:6px">
+          python3 -m http.server 8000<br>
+          Then open: http://localhost:8000/claude_architect_quiz.html
+        </code>
+      </div>`;
+    return;
+  }
+
+  // Apply saved theme
+  const savedTheme = Storage.getPref('theme', 'dark');
+  applyTheme(savedTheme);
+
+  // Wire theme toggle
+  const themeBtn = document.getElementById('theme-toggle');
+  if (themeBtn) themeBtn.onclick = toggleTheme;
+
+  // Auto-run tests if ?test=1 in URL
+  if (location.href.includes('test=1')) {
+    runAutoTests();
+    return;
+  }
+
+  // Navigate to dashboard
+  Router.navigate('dashboard');
+})();
+
+// ═══════════════════════════════════════════════════════════════
+// AUTO TEST MODE — triggered by ?test=1
+// ═══════════════════════════════════════════════════════════════
+async function runAutoTests() {
+  // Render results into a fixed overlay so Router.navigate() can't overwrite them
+  const overlay = document.createElement('div');
+  overlay.id = 'test-overlay';
+  overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;overflow-y:auto;z-index:9999;background:var(--bg);padding:20px';
+  overlay.innerHTML = '<div style="max-width:700px;margin:0 auto"><h2 style="margin-bottom:16px">Running Tests...</h2><div id="test-out"></div><div id="test-sum"></div></div>';
+  document.body.appendChild(overlay);
+  const out = document.getElementById('test-out');
+  const sum = document.getElementById('test-sum');
+
+  const results = [];
+  function log(pass, name, detail) {
+    results.push({pass, name});
+    const d = document.createElement('div');
+    d.style.cssText = `padding:6px 12px;margin:3px 0;border-radius:6px;font-size:0.85rem;background:${pass?'rgba(82,200,122,0.15)':'rgba(232,82,82,0.15)'};color:${pass?'var(--success)':'var(--danger)'}`;
+    d.textContent = (pass ? '✓ ' : '✗ ') + name + (detail ? ' — ' + detail : '');
+    out.appendChild(d);
+  }
+
+  function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+  // 1. Data integrity
+  log(QUESTIONS.length === 1157, `Questions loaded: ${QUESTIONS.length}/1157`);
+  log(QUESTIONS.every(q => Object.keys(q.choices).length === 4), 'All questions have 4 choices');
+  log(QUESTIONS.every(q => ['A','B','C','D'].includes(q.answer)), 'All answers valid A-D');
+  log(QUESTIONS.every(q => q.question.length > 0), 'All questions non-empty');
+  log(QUESTIONS.every(q => q.explanation.length > 0), 'All explanations non-empty');
+
+  // 2. Domain counts
+  const dc = {};
+  QUESTIONS.forEach(q => dc[q.domain] = (dc[q.domain]||0)+1);
+  log(dc.D1===325, `D1: ${dc.D1}/325`);
+  log(dc.D2===190, `D2: ${dc.D2}/190`);
+  log(dc.D3===200, `D3: ${dc.D3}/200`);
+  log(dc.D4===200, `D4: ${dc.D4}/200`);
+  log(dc.D5===230, `D5: ${dc.D5}/230`);
+  log(dc.SQ===12,  `SQ: ${dc.SQ}/12`);
+
+  // 3. localStorage
+  try {
+    localStorage.setItem('__t__','ok');
+    const v = localStorage.getItem('__t__');
+    localStorage.removeItem('__t__');
+    log(v==='ok', 'localStorage read/write works');
+  } catch(e) { log(false, 'localStorage', e.message); }
+
+  // 4. Scoring
+  log(Engine.calculateScaledScore(60,60)===1000, 'Score 60/60=1000');
+  log(Engine.calculateScaledScore(0,60)===100,   'Score 0/60=100');
+  log(Engine.calculateScaledScore(47,60)===805,  'Score 47/60=805');
+  log(Engine.isPassing(720)===true,  'isPassing(720)=true');
+  log(Engine.isPassing(719)===false, 'isPassing(719)=false');
+
+  // 5. SM-2 & buckets
+  Storage.reset();
+  const r0 = Storage.getProgress('Q1');
+  log(Storage.getBucket(r0)==='new', 'New question → new bucket');
+  Storage.updateProgress('Q1', true);
+  Storage.updateProgress('Q1', true);
+  log(Storage.getBucket(Storage.getProgress('Q1'))==='mastered', '2 correct → mastered');
+  Storage.updateProgress('Q1', false);
+  log(Storage.getBucket(Storage.getProgress('Q1'))==='learning', 'Wrong → back to learning');
+  const rec = Storage.getProgress('Q1');
+  log(rec.sm2_ease_factor >= 1.3, `SM-2 ease factor >= 1.3 (${rec.sm2_ease_factor.toFixed(2)})`);
+
+  // 6. Inline test suite
+  const inlinePassed = runTests();
+  log(inlinePassed, 'runTests() inline suite all pass');
+
+  // 7. Theme toggle
+  const origTheme = document.documentElement.getAttribute('data-theme');
+  toggleTheme();
+  const newTheme = document.documentElement.getAttribute('data-theme');
+  toggleTheme();
+  log(newTheme !== origTheme, `Theme toggle: ${origTheme} → ${newTheme}`);
+
+  // 8. Dashboard renders
+  Router.navigate('dashboard');
+  await wait(400);
+  log(!!document.querySelector('h1'), 'Dashboard h1 renders');
+  log(document.body.innerText.includes('1157') || document.body.innerText.includes('Mastered'), 'Dashboard shows progress data');
+
+  // 9. Mode select renders
+  Router.navigate('mode_select');
+  await wait(400);
+  log(document.querySelectorAll('.mode-card').length === 3, '3 mode cards on mode select');
+
+  // 10. Exam config renders
+  Router.navigate('exam_config');
+  await wait(400);
+  log(!!document.querySelector('.config-panel'), 'Exam config panel renders');
+  log(!!document.querySelector('.preset-btn.active'), '60q preset active');
+
+  // 11. Start exam + quiz screen
+  _examCount = 5; _examTimerMode = 'overall'; _examTimerMinutes = 60;
+  startExam();
+  await wait(600);
+  log(!!document.querySelector('.question-text'), 'Exam quiz question text renders');
+  log(document.querySelectorAll('.choice-btn').length === 4, '4 choice buttons');
+  log(document.querySelector('.q-counter')?.innerText.includes('1 of 5'), 'Counter: 1 of 5');
+
+  // 12. No feedback in exam mode after selecting answer
+  document.querySelector('.choice-btn[data-letter="A"]').click();
+  await wait(400);
+  log(document.querySelectorAll('.choice-btn.correct').length === 0 &&
+      document.querySelectorAll('.choice-btn.wrong').length === 0, 'No feedback in exam mode');
+  log(Array.from(document.querySelectorAll('button')).some(b => b.innerText.includes('Next')), 'Next button appears');
+
+  // 13. Complete exam → results
+  for (let i = 0; i < 5; i++) {
+    await wait(300);
+    const cb = document.querySelector('.choice-btn');
+    if (cb) cb.click();
+    await wait(300);
+    const sub = Array.from(document.querySelectorAll('button')).find(b => b.innerText.includes('Submit'));
+    const nxt = Array.from(document.querySelectorAll('button')).find(b => b.innerText.includes('Next →'));
+    if (sub) { sub.click(); break; }
+    else if (nxt) nxt.click();
+  }
+  await wait(800);
+  log(!!document.querySelector('.score-hero'), 'Results screen shown');
+  const scoreEl = document.querySelector('.score-number');
+  const score = scoreEl ? parseInt(scoreEl.innerText.trim()) : 0;
+  log(score >= 100 && score <= 1000, `Score in range (${score})`);
+  log(!!document.querySelector('.pass-badge'), 'Pass/fail badge shown');
+  log(!!document.querySelector('.results-table'), 'Domain breakdown table shown');
+  log(document.querySelectorAll('.review-item').length > 0, 'Review items shown');
+
+  // 14. Domain drill
+  _drillDomain = 'D1'; _drillCount = 3;
+  startDrill();
+  await wait(600);
+  log(!!document.querySelector('.question-text'), 'Domain Drill renders');
+  log(!document.getElementById('timer-display'), 'No timer in drill mode');
+  document.querySelector('.choice-btn[data-letter="A"]')?.click();
+  await wait(500);
+  log(document.querySelectorAll('.choice-btn.correct').length > 0 ||
+      document.querySelectorAll('.choice-btn.wrong').length > 0, 'Immediate feedback in drill');
+  log(!!document.querySelector('.explanation-panel'), 'Explanation panel shown');
+
+  // 15. Per-question timer
+  _examCount = 2; _examTimerMode = 'per_question';
+  startExam();
+  await wait(600);
+  const timerEl = document.getElementById('timer-display');
+  log(timerEl && timerEl.innerText.includes(':'), `Per-question timer mm:ss (${timerEl?.innerText})`);
+  const t1 = timerEl?.innerText;
+  await wait(2200);
+  const t2 = document.getElementById('timer-display')?.innerText;
+  log(t1 && t2 && t1 !== t2, `Timer counts down (${t1} → ${t2})`);
+
+  // 16. Overall timer
+  _examCount = 2; _examTimerMode = 'overall'; _examTimerMinutes = 5;
+  startExam();
+  await wait(600);
+  const ot = document.getElementById('timer-display');
+  log(ot && ot.innerText.includes(':'), `Overall timer mm:ss (${ot?.innerText})`);
+
+  // 17. Export (verify blob creation)
+  Router.navigate('dashboard');
+  await wait(400);
+  let exportRan = false;
+  const orig = URL.createObjectURL;
+  URL.createObjectURL = (b) => { exportRan = true; return 'blob:test'; };
+  Storage.exportProgress();
+  URL.createObjectURL = orig;
+  log(exportRan, 'Export creates blob URL');
+
+  // 18. Import round-trip
+  Storage.reset();
+  Storage.updateProgress('Q99', false);
+  const expData = { progress: Storage._p(), sessions: [], prefs: {} };
+  Storage.reset();
+  Storage.importProgress(JSON.stringify(expData));
+  log(Storage.getProgress('Q99').times_incorrect === 1, 'Import round-trip preserves data');
+
+  // 19. Invalid import error
+  let importErr = '';
+  try { Storage.importProgress('bad{json'); } catch(e) { importErr = e.message; }
+  log(importErr.includes('Invalid JSON') || importErr.includes('JSON'), `Invalid import throws error`);
+
+  // 20. Bucket total = 1157
+  const bc = Storage.getBucketCounts();
+  log(bc.new + bc.learning + bc.mastered === 1157, `Bucket total = ${bc.new+bc.learning+bc.mastered}/1157`);
+
+  // 21. Weak Areas config renders
+  Router.navigate('weak_config');
+  await wait(400);
+  log(!!document.querySelector('.config-panel'), 'Weak Areas config panel renders');
+
+  // Restore app to normal state
+  Router.navigate('dashboard');
+
+  // ─── Summary ──────────────────────────────────────────────
+  const passed = results.filter(r => r.pass).length;
+  const total  = results.length;
+  sum.innerHTML = `<div style="margin-top:20px;padding:16px;border-radius:8px;font-weight:700;font-size:1.1rem;background:${passed===total?'rgba(82,200,122,0.2)':'rgba(232,82,82,0.2)'};color:${passed===total?'var(--success)':'var(--danger)'}">
+    ${passed}/${total} tests passed${passed===total?' — ALL TESTS PASSED ✓':''}
+  </div>`;
+  console.log(`Auto-test results: ${passed}/${total}`);
+}
+</script>
+</body>
+</html>

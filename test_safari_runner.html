@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Safari Test Runner — Claude Quiz App</title>
+<style>
+body { font-family: -apple-system, sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; background: #f5f5f7; }
+h1 { font-size: 1.4rem; }
+.result { padding: 8px 12px; margin: 4px 0; border-radius: 6px; font-size: 0.88rem; }
+.pass { background: #d1fae5; color: #065f46; }
+.fail { background: #fee2e2; color: #991b1b; }
+.summary { margin-top: 20px; padding: 16px; border-radius: 8px; font-weight: 700; font-size: 1.1rem; }
+.all-pass { background: #d1fae5; color: #065f46; }
+.has-fail  { background: #fee2e2; color: #991b1b; }
+iframe { display: none; }
+</style>
+</head>
+<body>
+<h1>Safari Test Runner — Claude Architect Quiz App</h1>
+<p style="font-size:0.85rem;color:#555">Running tests against the quiz app in an iframe...</p>
+<div id="results"></div>
+<div id="summary"></div>
+
+<iframe id="app-frame" src="claude_architect_quiz.html"></iframe>
+
+<script>
+const results = [];
+const out = document.getElementById('results');
+const sum = document.getElementById('summary');
+
+function log(pass, name, err) {
+    results.push({pass, name, err});
+    const d = document.createElement('div');
+    d.className = 'result ' + (pass ? 'pass' : 'fail');
+    d.textContent = (pass ? '✓ ' : '✗ ') + name + (err ? ' — ' + err : '');
+    out.appendChild(d);
+}
+
+function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+async function runTests() {
+    const frame = document.getElementById('app-frame');
+
+    // Wait for iframe to load
+    await new Promise(resolve => {
+        frame.onload = resolve;
+        setTimeout(resolve, 8000); // fallback
+    });
+    await wait(2000); // let JS init
+
+    const W = frame.contentWindow;
+
+    // Helper: get text content of selector in iframe
+    const getText = sel => {
+        const el = frame.contentDocument.querySelector(sel);
+        return el ? el.innerText : null;
+    };
+    const getCount = sel => frame.contentDocument.querySelectorAll(sel).length;
+    const exists   = sel => !!frame.contentDocument.querySelector(sel);
+
+    // ─── 1. Basic load ────────────────────────────────────────
+    try { const h = getText('h1'); log(h && h.includes('Study Dashboard'), 'Dashboard loads', h); }
+    catch(e) { log(false, 'Dashboard loads', e.message); }
+
+    try { log(W.document.documentElement.getAttribute('data-theme') === 'dark', 'Dark mode default'); }
+    catch(e) { log(false, 'Dark mode default', e.message); }
+
+    try { log(frame.contentDocument.body.innerText.includes('1157'), '1157 questions shown'); }
+    catch(e) { log(false, '1157 questions shown', e.message); }
+
+    // ─── 2. localStorage ──────────────────────────────────────
+    try {
+        W.localStorage.setItem('__test__', 'ok');
+        const val = W.localStorage.getItem('__test__');
+        W.localStorage.removeItem('__test__');
+        log(val === 'ok', 'localStorage works in Safari');
+    } catch(e) { log(false, 'localStorage works in Safari', e.message); }
+
+    // ─── 3. Questions loaded ──────────────────────────────────
+    try { log(W.QUESTIONS && W.QUESTIONS.length === 1157, `QUESTIONS array has 1157 items (got ${W.QUESTIONS?.length})`); }
+    catch(e) { log(false, 'QUESTIONS loaded', e.message); }
+
+    // ─── 4. Score formula ─────────────────────────────────────
+    try {
+        const s1 = W.Engine.calculateScaledScore(60,60);
+        const s2 = W.Engine.calculateScaledScore(0,60);
+        const s3 = W.Engine.calculateScaledScore(47,60);
+        log(s1===1000 && s2===100 && s3===805, `Score formula: 60/60=1000 ✓ 0/60=100 ✓ 47/60=805 ✓`);
+    } catch(e) { log(false, 'Score formula', e.message); }
+
+    // ─── 5. Pass/fail threshold ───────────────────────────────
+    try {
+        log(W.Engine.isPassing(720) && !W.Engine.isPassing(719), 'Pass threshold = 720');
+    } catch(e) { log(false, 'Pass threshold', e.message); }
+
+    // ─── 6. SM-2 & bucket logic ───────────────────────────────
+    try {
+        W.Storage.reset();
+        const r0 = W.Storage.getProgress('Q1');
+        const b0 = W.Storage.getBucket(r0);
+        W.Storage.updateProgress('Q1', true);
+        W.Storage.updateProgress('Q1', true);
+        const r2 = W.Storage.getProgress('Q1');
+        const b2 = W.Storage.getBucket(r2);
+        W.Storage.updateProgress('Q1', false);
+        const r3 = W.Storage.getProgress('Q1');
+        const b3 = W.Storage.getBucket(r3);
+        log(b0==='new' && b2==='mastered' && b3==='learning',
+            `Buckets: new→mastered→learning (got: ${b0}→${b2}→${b3})`);
+    } catch(e) { log(false, 'SM-2 bucket transitions', e.message); }
+
+    // ─── 7. Inline test suite ─────────────────────────────────
+    try {
+        const passed = W.runTests();
+        log(passed === true, 'runTests() all pass');
+    } catch(e) { log(false, 'runTests()', e.message); }
+
+    // ─── 8. Mode select navigation ────────────────────────────
+    try {
+        W.Router.navigate('mode_select');
+        await wait(600);
+        const cards = getCount('.mode-card');
+        log(cards === 3, `3 mode cards shown (got ${cards})`);
+    } catch(e) { log(false, 'Mode select navigation', e.message); }
+
+    // ─── 9. Exam config ───────────────────────────────────────
+    try {
+        W.Router.navigate('exam_config');
+        await wait(600);
+        log(exists('.config-panel'), 'Exam config panel loads');
+    } catch(e) { log(false, 'Exam config', e.message); }
+
+    try {
+        const active = getText('.preset-btn.active');
+        log(active && active.includes('60'), `60q preset active (got: ${active})`);
+    } catch(e) { log(false, '60q preset default', e.message); }
+
+    // ─── 10. Start exam + quiz renders ────────────────────────
+    try {
+        // Set 5 questions, overall timer
+        W._examCount = 5;
+        W._examTimerMode = 'overall';
+        W._examTimerMinutes = 60;
+        W.startExam();
+        await wait(800);
+        const qtext = getText('.question-text');
+        log(!!qtext && qtext.length > 10, 'Exam quiz renders question text');
+    } catch(e) { log(false, 'Exam quiz renders', e.message); }
+
+    try {
+        const counter = getText('.q-counter');
+        log(counter && counter.includes('1 of 5'), `Counter shows 1 of 5 (got: ${counter})`);
+    } catch(e) { log(false, 'Question counter', e.message); }
+
+    try {
+        log(getCount('.choice-btn') === 4, '4 choice buttons rendered');
+    } catch(e) { log(false, '4 choices', e.message); }
+
+    // ─── 11. Exam: no feedback on answer ──────────────────────
+    try {
+        frame.contentDocument.querySelector('.choice-btn[data-letter="A"]').click();
+        await wait(400);
+        const correct = getCount('.choice-btn.correct');
+        const wrong   = getCount('.choice-btn.wrong');
+        log(correct === 0 && wrong === 0, 'No feedback in exam mode');
+    } catch(e) { log(false, 'No exam feedback', e.message); }
+
+    try {
+        const hasNext = Array.from(frame.contentDocument.querySelectorAll('button'))
+            .some(b => b.innerText.includes('Next'));
+        log(hasNext, 'Next button appears after answering');
+    } catch(e) { log(false, 'Next button', e.message); }
+
+    // ─── 12. Complete exam → results ──────────────────────────
+    try {
+        for (let i = 0; i < 5; i++) {
+            await wait(300);
+            const choices = frame.contentDocument.querySelectorAll('.choice-btn');
+            if (choices.length) choices[0].click();
+            await wait(300);
+            const submit = Array.from(frame.contentDocument.querySelectorAll('button')).find(b=>b.innerText.includes('Submit'));
+            const next   = Array.from(frame.contentDocument.querySelectorAll('button')).find(b=>b.innerText.includes('Next →'));
+            if (submit) { submit.click(); break; }
+            else if (next) next.click();
+        }
+        await wait(1000);
+        log(exists('.score-hero'), 'Results screen shown after exam');
+    } catch(e) { log(false, 'Results screen', e.message); }
+
+    try {
+        const scoreEl = frame.contentDocument.querySelector('.score-number');
+        const score = scoreEl ? parseInt(scoreEl.innerText.trim()) : null;
+        log(score >= 100 && score <= 1000, `Score in range 100-1000 (got: ${score})`);
+    } catch(e) { log(false, 'Score range', e.message); }
+
+    try { log(exists('.pass-badge'), 'Pass/Fail badge shown'); }
+    catch(e) { log(false, 'Pass/Fail badge', e.message); }
+
+    try { log(exists('.results-table'), 'Domain table shown'); }
+    catch(e) { log(false, 'Domain table', e.message); }
+
+    try { log(getCount('.review-item') > 0, 'Review items shown'); }
+    catch(e) { log(false, 'Review items', e.message); }
+
+    // ─── 13. Domain drill ─────────────────────────────────────
+    try {
+        W._drillDomain = 'D1';
+        W._drillCount = 3;
+        W.startDrill();
+        await wait(800);
+        log(exists('.question-text'), 'Domain Drill loads');
+    } catch(e) { log(false, 'Domain Drill', e.message); }
+
+    try { log(!exists('#timer-display'), 'No timer in drill mode'); }
+    catch(e) { log(false, 'No timer in drill', e.message); }
+
+    try {
+        frame.contentDocument.querySelector('.choice-btn[data-letter="A"]').click();
+        await wait(500);
+        const hasFeedback = getCount('.choice-btn.correct') > 0 || getCount('.choice-btn.wrong') > 0;
+        log(hasFeedback, 'Immediate feedback in drill mode');
+    } catch(e) { log(false, 'Immediate feedback', e.message); }
+
+    try { log(exists('.explanation-panel'), 'Explanation panel shown'); }
+    catch(e) { log(false, 'Explanation panel', e.message); }
+
+    // ─── 14. Per-question timer ───────────────────────────────
+    try {
+        W._examCount = 2;
+        W._examTimerMode = 'per_question';
+        W._examTimerMinutes = 60;
+        W.startExam();
+        await wait(800);
+        const timerEl = frame.contentDocument.getElementById('timer-display');
+        log(timerEl && timerEl.innerText.includes(':'), `Per-question timer shows mm:ss (got: ${timerEl?.innerText})`);
+    } catch(e) { log(false, 'Per-question timer', e.message); }
+
+    try {
+        const t1 = frame.contentDocument.getElementById('timer-display')?.innerText;
+        await wait(2200);
+        const t2 = frame.contentDocument.getElementById('timer-display')?.innerText;
+        log(t1 && t2 && t1 !== t2, `Timer counts down (${t1} → ${t2})`);
+    } catch(e) { log(false, 'Timer counts down', e.message); }
+
+    // ─── 15. Theme toggle ─────────────────────────────────────
+    try {
+        W.Router.navigate('dashboard');
+        await wait(500);
+        W.toggleTheme();
+        const theme = W.document.documentElement.getAttribute('data-theme');
+        W.toggleTheme(); // reset
+        log(theme === 'light', `Theme toggle switches to light (got: ${theme})`);
+    } catch(e) { log(false, 'Theme toggle', e.message); }
+
+    // ─── 16. Export produces JSON ─────────────────────────────
+    try {
+        // Can't trigger actual download in iframe easily — verify the function exists and runs
+        let exported = false;
+        const origCreate = W.URL.createObjectURL;
+        W.URL.createObjectURL = (blob) => { exported = true; return 'blob:test'; };
+        W.Storage.exportProgress();
+        W.URL.createObjectURL = origCreate;
+        log(exported, 'Export function runs and creates blob URL');
+    } catch(e) { log(false, 'Export function', e.message); }
+
+    // ─── 17. Import round-trip ────────────────────────────────
+    try {
+        W.Storage.reset();
+        W.Storage.updateProgress('Q42', true);
+        const exported = { progress: W.Storage._p(), sessions: [], prefs: {} };
+        W.Storage.reset();
+        W.Storage.importProgress(JSON.stringify(exported));
+        const rec = W.Storage.getProgress('Q42');
+        log(rec.times_correct === 1, `Import round-trip: Q42 times_correct=${rec.times_correct}`);
+    } catch(e) { log(false, 'Import round-trip', e.message); }
+
+    // ─── Summary ─────────────────────────────────────────────
+    const passed = results.filter(r => r.pass).length;
+    const total  = results.length;
+    const s = document.createElement('div');
+    s.className = 'summary ' + (passed === total ? 'all-pass' : 'has-fail');
+    s.textContent = `${passed}/${total} tests passed${passed === total ? ' — ALL SAFARI TESTS PASSED ✓' : ''}`;
+    sum.appendChild(s);
+    console.log(`Safari test results: ${passed}/${total}`);
+}
+
+runTests().catch(e => {
+    const d = document.createElement('div');
+    d.className = 'result fail';
+    d.textContent = 'RUNNER ERROR: ' + e.message;
+    out.appendChild(d);
+});
+</script>
+</body>
+</html>
