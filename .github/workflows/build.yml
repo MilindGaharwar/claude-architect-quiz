@@ -1,0 +1,38 @@
+name: Build and Deploy Quiz App
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'quiz_template.html'
+      - 'Claude_Architect_Exam_FINAL.md'
+      - 'build.py'
+      - '.github/workflows/build.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Build quiz HTML
+        run: |
+          python3 build.py \
+            --input Claude_Architect_Exam_FINAL.md \
+            --template quiz_template.html \
+            --output claude_architect_quiz.html
+
+      - name: Commit built file back to repo
+        run: |
+          git config user.name  "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add claude_architect_quiz.html
+          git diff --staged --quiet || git commit -m "Auto-build: update claude_architect_quiz.html [skip ci]"
+          git push
