@@ -1,0 +1,4 @@
+[[redirects]]
+  from = "/"
+  to = "/claude_architect_quiz.html"
+  status = 200
